@@ -2,7 +2,7 @@
 module.exports = {
     apps: [
         {
-            name: 'nuxt3-tag',
+            name: 'naifu',
             script: '.output/server/index.mjs',
             instances: '1',
             exec_mode: 'cluster',

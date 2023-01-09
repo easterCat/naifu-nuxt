@@ -174,7 +174,7 @@
                 </div>
             </div>
         </div>
-        <app-animate>
+        <MobileAppAnimate>
             <div v-if="showImport" class="import-wrapper">
                 <div class="import-layer">
                     <textarea v-model="importText" type="text" />
@@ -184,7 +184,7 @@
                     <button @click="confirmImport">确定</button>
                 </div>
             </div>
-        </app-animate>
+        </MobileAppAnimate>
     </div>
 </template>
 

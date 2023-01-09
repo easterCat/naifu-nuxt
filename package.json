@@ -1,5 +1,5 @@
 {
-    "name": "nuxt3-tag",
+    "name": "naifu",
     "private": true,
     "scripts": {
         "dev": "env-cmd -e development nuxt dev",
@@ -60,7 +60,7 @@
         "element-plus": "^2.2.19",
         "pinia": "^2.0.28",
         "store": "^2.0.12",
-        "v-viewer": "^1.6.4",
+        "v-viewer": "^3.0.11",
         "viewerjs": "^1.11.1",
         "vue-uuid": "^3.0.0",
         "vue3-clipboard": "^1.0.0",

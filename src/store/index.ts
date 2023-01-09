@@ -27,6 +27,14 @@ export const useIndexStore = defineStore({
         userId: (state) => state.userInfo.id,
         email: (state) => state.userInfo.email,
         roleId: (state) => state.userInfo.role_id,
+        favoriteIds: (state) =>
+            state.userInfo.favorites && state.userInfo.favorites.length
+                ? state.userInfo.favorites.map((i: any) => i.id).join(',')
+                : '',
+        favorites: (state) =>
+            state.userInfo.favorites && state.userInfo.favorites.length
+                ? state.userInfo.favorites
+                : [],
     },
 
     actions: {
@@ -62,6 +70,23 @@ export const useIndexStore = defineStore({
                 const { access_token } = result.data;
                 this.access_token = access_token;
                 $store.set('access_token', JSON.stringify(access_token));
+            }
+        },
+        removeFavoriteById(id: number) {
+            const fIndex = this.userInfo.favorites.findIndex((i: any) => {
+                return i.id === id;
+            });
+            if (fIndex >= 0) {
+                const { $store } = useNuxtApp();
+                this.userInfo.favorites.splice(fIndex, 1);
+                $store.set('user', JSON.stringify(this.userInfo));
+            }
+        },
+        addFavoriteById(data: any) {
+            if (data) {
+                const { $store } = useNuxtApp();
+                this.userInfo.favorites.push(data);
+                $store.set('user', JSON.stringify(this.userInfo));
             }
         },
     },

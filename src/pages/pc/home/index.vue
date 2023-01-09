@@ -1,6 +1,6 @@
 <template>
     <div class="home-page page">
-        <ClientOnly><AppHeader /></ClientOnly>
+        <ClientOnly><PcAppHeader /></ClientOnly>
         <ClientOnly>
             <div
                 v-animate-css="{
@@ -10,33 +10,18 @@
                 class="content"
             >
                 <div class="banner-con">
-                    <AppBanner
+                    <PcAppBanner
                         placeholder="请输入关键标签"
                         @search-change="searchChange"
-                    ></AppBanner>
+                    ></PcAppBanner>
                 </div>
-                <div class="control-blur-btns">
-                    <button
-                        class="btn btn-sm m-r-10"
-                        :class="[openImageFlur ? 'btn-accent' : 'btn-s-30']"
-                        @click="() => (openImageFlur = true)"
-                    >
-                        模糊
-                    </button>
-                    <button
-                        class="btn btn-sm"
-                        :class="[!openImageFlur ? 'btn-accent' : 'btn-s-30']"
-                        @click="() => (openImageFlur = false)"
-                    >
-                        原图
-                    </button>
-                </div>
-
+                <PcImageFlur @get-image-flur="getImageFlur"></PcImageFlur>
                 <common-water-fall
                     :datas="imageList"
-                    :flur="openImageFlur"
+                    :flur="imageFlur"
                     :loading="loadingStatus"
                     :search-text="searchText"
+                    :favorite-ids="indexStore.favoriteIds"
                     @load="scrollLoad"
                     @preview="showDetail"
                     @favorite="likeTemplate"
@@ -54,7 +39,7 @@
 <script lang="ts" setup>
 import { ref, Ref } from 'vue';
 import lodash from 'lodash';
-import { useIndexStore } from '@/store/index';
+import { useIndexStore } from '~~/src/store/index';
 
 interface ImageItem {
     name: string;
@@ -87,7 +72,6 @@ interface ImageItem {
 
 let indexStore: any = null;
 const { TemplateApi } = useApi();
-const openImageFlur = ref(true);
 const { $store }: any = useNuxtApp();
 const showPreview = ref(false);
 const currentTemplate: Ref<any | null> = ref(null);
@@ -97,10 +81,15 @@ const pageSize = ref(50);
 const ip = ref('');
 const searchText = ref('');
 const imageList: Ref<ImageItem[]> = ref([]);
+const imageFlur = ref('high');
+
+const getImageFlur = (value: any) => {
+    imageFlur.value = value;
+};
 
 const initList = async () => {
     TemplateApi.setIp();
-    const initPageIndex = Math.ceil(Math.random() * 80);
+    const initPageIndex = Math.ceil(Math.random() * 100);
     const result = await TemplateApi.getTemplates({
         pageIndex: initPageIndex ? initPageIndex : 1,
         pageSize: 50,
@@ -128,9 +117,12 @@ const searchChange = lodash.debounce(async (val: any) => {
 }, 1200);
 
 const likeTemplate = async (id: number) => {
-    const result: any = await TemplateApi.likeTemplateById({ id, userId: indexStore?.userId });
-    if (result.like) {
-        console.log(' 喜爱成功:>> ');
+    const result: any = await TemplateApi.likeTemplateById({
+        templateId: id,
+        userId: indexStore?.userId,
+    });
+    if (result.code === 200) {
+        indexStore.addFavoriteById(result.data);
     }
 };
 

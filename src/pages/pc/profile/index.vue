@@ -1,78 +1,73 @@
 <template>
-    <div class="profile-page page">
-        <ClientOnly><AppHeader /></ClientOnly>
-        <div class="content">
-            <div class="banner-con">
-                <div class="banner-image">
-                    <img src="@/assets/imgs/banner/sYw7uX71Xe.jpeg" alt="" />
-                </div>
-            </div>
-            <div class="profile-con">
-                <div class="avatar-con">
-                    <div class="avatar">
-                        <div class="w-32 rounded-full">
-                            <img src="https://placeimg.com/192/192/people" />
-                        </div>
+    <ClientOnly>
+        <div class="profile-page page">
+            <PcAppHeader />
+            <div class="content">
+                <div class="banner-con">
+                    <div class="banner-image">
+                        <img src="@/assets/imgs/banner/sYw7uX71Xe.jpeg" alt="" />
                     </div>
                 </div>
-                <div class="info-con">
-                    <div class="left">
-                        <div class="shadow stats">
-                            <div class="stat place-items-center">
-                                <div class="stat-title">关注</div>
-                                <div class="stat-value">999</div>
-                                <div class="stat-desc">截止 January 1st to February 1st</div>
+                <div class="profile-con">
+                    <div class="avatar-con">
+                        <div class="avatar">
+                            <div class="w-32 rounded-full">
+                                <img src="https://placeimg.com/192/192/people" />
                             </div>
+                        </div>
+                    </div>
+                    <div class="info-con">
+                        <div class="left">
+                            <div class="shadow stats">
+                                <div class="stat place-items-center">
+                                    <div class="stat-title">关注</div>
+                                    <div class="stat-value">999</div>
+                                    <div class="stat-desc">截止 2023年1月13日</div>
+                                </div>
 
-                            <div class="stat place-items-center">
-                                <div class="stat-title">追随</div>
-                                <div class="stat-value text-secondary">4,200</div>
-                                <div class="stat-desc text-secondary">
-                                    截止 January 1st to February 1st
+                                <div class="stat place-items-center">
+                                    <div class="stat-title">追随</div>
+                                    <div class="stat-value text-secondary">4,200</div>
+                                    <div class="stat-desc text-secondary">截止 2023年1月13日</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="center">
-                        <div class="shadow stats">
-                            <div class="stat place-items-center">
-                                <div class="stat-title">昵称</div>
-                                <div class="stat-value">{{ indexStore.nickname }}</div>
-                                <div class="stat-desc">截止 January 1st to February 1st</div>
+                        <div class="center">
+                            <div class="shadow stats">
+                                <div class="stat place-items-center">
+                                    <div class="stat-title">昵称</div>
+                                    <div class="stat-value">{{ indexStore?.nickname }}</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="right">
-                        <div class="shadow stats">
-                            <div class="stat place-items-center">
-                                <div class="stat-title">用户等级</div>
-                                <div class="stat-value">{{ userLevel() }}</div>
-                                <div class="stat-desc">截止 January 1st to February 1st</div>
-                            </div>
+                        <div class="right">
+                            <div class="shadow stats">
+                                <div class="stat place-items-center">
+                                    <div class="stat-title">用户等级</div>
+                                    <div class="stat-value">{{ userLevel() }}</div>
+                                </div>
 
-                            <div class="stat place-items-center">
-                                <div class="stat-title">加入天数</div>
-                                <div class="stat-value text-secondary">
-                                    {{ joinDay() }}
-                                </div>
-                                <div class="stat-desc text-secondary">
-                                    截止 January 1st to February 1st
+                                <div class="stat place-items-center">
+                                    <div class="stat-title">加入天数</div>
+                                    <div class="stat-value text-secondary">
+                                        {{ joinDay() }}
+                                    </div>
+                                    <div class="stat-desc text-secondary">截止 2023年1月13日</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="tabs-con">
-                <div class="tabs">
-                    <a class="tab tab-lg tab-bordered tab-active">收藏</a>
+                <div class="tabs-con">
+                    <div class="tabs">
+                        <a class="tab tab-lg tab-bordered tab-active m-r-10">收藏模版</a>
+                        <a class="tab tab-lg tab-bordered">个人模版</a>
+                    </div>
                 </div>
-            </div>
-            <div class="collect-con">
-                <el-row class="list-con" :gutter="20">
-                    <ClientOnly>
+                <div class="collect-con">
+                    <el-row v-if="indexStore?.favorites" class="list-con" :gutter="20">
                         <el-col
-                            v-for="(tem, tIndex) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                            v-for="(tem, tIndex) in indexStore?.favorites"
                             :key="tIndex"
                             v-animate-css="{
                                 direction: 'modifySlideInUp',
@@ -86,46 +81,110 @@
                         >
                             <div class="shadow-xl card card-compact bg-base-100 m-b-20">
                                 <figure>
-                                    <img src="https://placeimg.com/400/225/arch" alt="Shoes" />
+                                    <nuxt-img
+                                        class="image"
+                                        :src="
+                                            tem?.min_imgbb_url
+                                                ? tem?.min_imgbb_url
+                                                : tem?.minify_preview
+                                        "
+                                        loading="lazy"
+                                    />
                                 </figure>
                                 <div class="card-body">
-                                    <h2 class="card-title">Shoes!</h2>
-                                    <p>If a dog chews shoes whose shoes does he choose?</p>
+                                    <h2 class="card-title">{{ tem?.name }}</h2>
+                                    <p>{{ tem?.author }}</p>
                                     <div class="justify-end card-actions">
-                                        <button class="btn btn-sm btn-accent">模版详情</button>
-                                        <button class="btn btn-sm btn-secondary">取消收藏</button>
+                                        <button
+                                            class="btn btn-sm btn-secondary"
+                                            @click="favoriteTem(tem?.id)"
+                                        >
+                                            移除
+                                        </button>
+                                        <button
+                                            class="btn btn-accent btn-sm"
+                                            @click="cardClick(tem)"
+                                        >
+                                            详情
+                                        </button>
+                                        <button
+                                            class="btn btn-primary btn-sm"
+                                            @click="exportSfwToShop(tem)"
+                                        >
+                                            购物车
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </el-col>
-                    </ClientOnly>
-                </el-row>
+                    </el-row>
+                </div>
             </div>
+            <PcTemplateDetail
+                v-model="showPreview"
+                :current-template="currentTemplate"
+            ></PcTemplateDetail>
         </div>
-    </div>
+    </ClientOnly>
 </template>
 
 <script setup lang="ts">
+import { Ref } from 'vue';
 import dayjs from 'dayjs';
-import { useIndexStore } from '@/store/index';
+import { useIndexStore } from '~~/src/store/index';
 
-const indexStore = useIndexStore();
+const { AuthApi, TemplateApi } = useApi();
+const { setShop } = useShop();
+let indexStore: any = null;
+
+const showPreview = ref(false);
+const currentTemplate: Ref<any | null> = ref(null);
 
 const joinDay = () => {
-    const minus = dayjs(dayjs().format('YYYY-MM-DD')).diff(indexStore.userInfo.create_time, 'day');
+    const minus = dayjs(dayjs().format('YYYY-MM-DD')).diff(indexStore?.userInfo.create_time, 'day');
     return minus;
 };
 
+const initUserInfo = async () => {
+    const result = await AuthApi.getUserInfo();
+    const { data } = result;
+    indexStore.setUserInfo(data?.user);
+};
+
 const userLevel = () => {
-    if (!indexStore.roleId) return '';
+    if (!indexStore?.roleId) return '';
     const obj: any = {
         '1': '管理员',
         '2': '开发者',
         '3': '贡献者',
         '4': '游客',
     };
-    return obj[indexStore.roleId];
+    return obj[indexStore?.roleId];
 };
+
+const exportSfwToShop = (tem: any) => {
+    setShop(tem?.prompt);
+};
+
+const favoriteTem = async (id: number) => {
+    const result: any = await TemplateApi.likeTemplateById({
+        templateId: id,
+        userId: indexStore?.userId,
+    });
+    if (result?.code === 200) {
+        indexStore.removeFavoriteById(id);
+    }
+};
+
+const cardClick = (tem: any) => {
+    currentTemplate.value = { ...tem };
+    showPreview.value = true;
+};
+
+onMounted(() => {
+    indexStore = useIndexStore();
+    initUserInfo();
+});
 </script>
 
 <style scoped>
@@ -133,6 +192,15 @@ const userLevel = () => {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
+
+    .image {
+        width: 100%;
+        height: 320px;
+        display: block;
+        background: rgb(148, 148, 148);
+        object-fit: cover;
+        object-position: center center;
+    }
 
     .banner-con {
         display: flex;
@@ -199,7 +267,7 @@ const userLevel = () => {
         border-radius: 10px;
         height: auto;
         line-height: auto;
-        padding: 10px 0px 0px 0px;
+        padding: 10px 10px 0px 10px;
     }
 
     .collect-con {

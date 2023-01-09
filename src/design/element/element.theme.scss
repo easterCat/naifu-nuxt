@@ -1,11 +1,18 @@
 .el-pagination {
     --tw-bg-opacity: 1;
     --el-color-primary: hsl(var(--p) / var(--tw-bg-opacity)) !important;
-    --el-pagination-border-radius: 8px !important;
+    --el-pagination-border-radius: 10px !important;
     --el-color-white: hsl(var(--pc) / var(--tw-bg-opacity)) !important;
 }
 .el-input {
     --el-input-border-radius: 10px !important;
+}
+.el-textarea {
+    border-radius: 10px;
+    border: 1px solid hsl(var(--p) / 0.3);
+    .el-textarea__inner {
+        border-radius: 10px;
+    }
 }
 .el-drawer {
     --el-drawer-bg-color: hsl(var(--b3, var(--b2)) / var(1)) !important;

@@ -89,7 +89,6 @@ module.exports = {
                     'object',
                     'type',
                 ],
-
                 pathGroups: [
                     {
                         pattern: 'vue',
@@ -100,10 +99,6 @@ module.exports = {
                         pattern: '@vue/**',
                         group: 'external',
                         position: 'before',
-                    },
-                    {
-                        pattern: 'ant-design-vue',
-                        group: 'internal',
                     },
                 ],
                 pathGroupsExcludedImportTypes: ['type'],

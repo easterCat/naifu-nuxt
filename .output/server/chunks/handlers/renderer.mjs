@@ -301,7 +301,7 @@ globalThis.__buildAssetsURL = buildAssetsURL;
 globalThis.__publicAssetsURL = publicAssetsURL;
 const getClientManifest = () => import('../app/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
 const getStaticRenderedHead = () => import('../rollup/_virtual_head-static.mjs').then((r) => r.default || r);
-const getServerEntry = () => import('../app/server.mjs').then(function (n) { return n.b; }).then((r) => r.default || r);
+const getServerEntry = () => import('../app/server.mjs').then(function (n) { return n.a; }).then((r) => r.default || r);
 const getSSRStyles = () => import('../app/styles.mjs').then((r) => r.default || r);
 const getSSRRenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();

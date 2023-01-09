@@ -5,7 +5,7 @@
                 清空
                 <Icon class="m-l-6" name="ant-design:delete-filled"></Icon>
             </button>
-            <button class="btn btn-sm btn-accent m-r-10" @click="shopImport">
+            <button class="btn btn-sm btn-accent m-r-10" @click="importPromptFromShop">
                 购物车导入
                 <Icon class="m-l-6" name="clarity:shopping-cart-solid-badged"></Icon>
             </button>
@@ -52,7 +52,26 @@
                     placeholder="请输入url,例如: https://cube-joan-released-philips.trycloudflare.com/generate-stream"
                     clearable
                     size="large"
-                />
+                >
+                    <template #prepend>
+                        <el-select
+                            v-model="postUrlProvide"
+                            placeholder="选择接口"
+                            style="width: 115px"
+                            size="large"
+                            @change="postUrlProvideChange"
+                        >
+                            <el-option
+                                label="FreeApi"
+                                value="https://www.naifuai.site/api/draw/ai"
+                            />
+                            <el-option
+                                label="Colab"
+                                value="https://cube-joan-released-philips.trycloudflare.com/generate-stream"
+                            />
+                        </el-select>
+                    </template>
+                </el-input>
             </el-col>
             <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
                 <el-input
@@ -83,7 +102,7 @@
                     type="range"
                     min="1"
                     max="9"
-                    :value="generateNum"
+                    :value="settingStore.drawNumber"
                     class="range range-xs"
                     step="1"
                     @change="rangeChange"
@@ -104,7 +123,7 @@
         <div v-if="gImage" class="g-image m-t-20">
             <ul>
                 <li v-for="(item, iIndex) in gImage" :key="iIndex">
-                    <img :src="item" alt="" />
+                    <img :src="item" alt="" @click="previewURL(item)" />
                 </li>
             </ul>
         </div>
@@ -163,19 +182,23 @@
 <script setup lang="ts">
 import { onMounted, Ref } from 'vue';
 import dayjs from 'dayjs';
+import { useSettingStore } from '@/store/setting';
+import { warnNotification } from '@/utils/notification';
 
 interface HistoryItem {
     prompt?: string | undefined;
     time?: string | undefined;
 }
+const settingStore = useSettingStore();
 const { NovalApi } = useApi();
 const { $store } = useNuxtApp();
 const { copy } = useCopy();
-const { shop } = useShop();
+const { shop, setShop } = useShop();
+
 const key = 'prompt_history';
 const textArea: Ref<string> = ref('');
 const postUrl: Ref<string> = ref('');
-const generateNum: Ref<number> = ref(1);
+const postUrlProvide: Ref<string> = ref('');
 const promptHistory: Ref<HistoryItem[]> = ref<HistoryItem[]>([]);
 const promptHistoryLength: Ref<number> = ref(0);
 const gImage: Ref<any[] | undefined> = ref([]);
@@ -236,13 +259,20 @@ const uc = ref(
 
 onMounted(() => {
     getData();
-    shopImport();
+    importPromptFromShop();
     postUrl.value = sessionStorage.getItem('post_url') || '';
+    postUrlProvide.value = sessionStorage.getItem('post_url_provide') || '';
 });
 
-const shopImport = () => {
+const importPromptFromShop = () => {
     textArea.value = shop.value;
-    saveData(textArea.value);
+    if (textArea.value) {
+        saveData(textArea.value);
+    }
+};
+
+const exportPromptToShop = (prompt: string) => {
+    setShop(prompt);
 };
 
 const clearHistory = () => {
@@ -256,39 +286,128 @@ const clearPrompt = () => {
 };
 
 const rangeChange = (e: any) => {
-    generateNum.value = e.target.value || 1;
+    settingStore.setDrawNumber(e.target.value || 1);
 };
 
-const generateImage = async () => {
+const postUrlProvideChange = (value: string) => {
+    if (value) {
+        sessionStorage.setItem('post_url', value);
+        sessionStorage.setItem('post_url_provide', value);
+        postUrlProvide.value = value;
+        postUrl.value = value;
+    }
+};
+
+const generateImage = () => {
+    if (postUrl.value && postUrl.value.includes('www.naifuai.site')) {
+        rrythGenerate();
+    } else {
+        naifuGenerate();
+    }
+};
+
+const rrythGenerate = async () => {
     if (loading.value) return;
     loading.value = true;
     const size = generateImageSize.value.split('*');
     const width = size[0];
     const height = size[1];
+
+    try {
+        if (settingStore.drawNumber === 1) {
+            const seed = Math.floor(Math.random() * Math.pow(2, 32));
+            const result = await NovalApi.rrythGenerate({
+                n_samples: settingStore.drawNumber,
+                sampler: generateImageSampler.value,
+                postUrl: postUrl.value,
+                init_images: '',
+                prompt: textArea.value,
+                seed,
+                negative_prompt: uc.value,
+                cfg_scale: 12,
+                width,
+                height,
+                denoising_strength: 0.6,
+                steps: 28,
+            });
+            loading.value = false;
+            const images: string[] = result.data.images;
+            gImage.value = images?.map((i: any) => {
+                return `data:image/png;base64,${i}`;
+            });
+        } else {
+            const results = await Promise.all(
+                Array.from({ length: settingStore.drawNumber }).map((i) => {
+                    const seed = Math.floor(Math.random() * Math.pow(2, 32));
+                    return NovalApi.rrythGenerate({
+                        n_samples: settingStore.drawNumber,
+                        sampler: generateImageSampler.value,
+                        postUrl: postUrl.value,
+                        init_images: '',
+                        prompt: textArea.value,
+                        seed,
+                        negative_prompt: uc.value,
+                        cfg_scale: 12,
+                        width,
+                        height,
+                        denoising_strength: 0.6,
+                        steps: 28,
+                    });
+                }),
+            );
+            loading.value = false;
+            const images: string[] = results.map((item) => {
+                return item.data.images[0];
+            });
+            gImage.value = images?.map((i: any) => {
+                return `data:image/png;base64,${i}`;
+            });
+        }
+        saveData(textArea.value);
+        exportPromptToShop(textArea.value);
+        sessionStorage.setItem('post_url', postUrl.value);
+    } catch (error) {
+        loading.value = false;
+    }
+};
+
+const naifuGenerate = async () => {
+    if (loading.value) return;
+    if (!postUrl.value) return warnNotification('地址为空');
+    loading.value = true;
+    const size = generateImageSize.value.split('*');
+    const width = size[0];
+    const height = size[1];
+    const seed = Math.floor(Math.random() * Math.pow(2, 32));
     if (!postUrl.value.includes('/generate-stream')) {
         postUrl.value = `${postUrl.value}/generate-stream`;
     }
-    const result = await NovalApi.generate({
-        height,
-        n_samples: generateNum.value,
-        prompt: textArea.value,
-        sampler: generateImageSampler.value,
-        scale: 12,
-        seed: 2081400182,
-        steps: 28,
-        uc: uc.value,
-        ucPreset: 0,
-        width,
-        postUrl: postUrl.value,
-    });
-    loading.value = false;
-    const base64Reg = /(?<=data:)[A-Za-z0-9\/+=]+/g;
-    const arr = `${result}`.match(base64Reg);
-    gImage.value = arr?.map((i: any) => {
-        return `data:image/png;base64,${i}`;
-    });
-    saveData(textArea.value);
-    sessionStorage.setItem('post_url', postUrl.value);
+    try {
+        const result = await NovalApi.generate({
+            height,
+            n_samples: settingStore.drawNumber,
+            prompt: textArea.value,
+            sampler: generateImageSampler.value,
+            scale: 12,
+            seed,
+            steps: 28,
+            uc: uc.value,
+            ucPreset: 0,
+            width,
+            postUrl: postUrl.value,
+        });
+        loading.value = false;
+        const base64Reg = /(?<=data:)[A-Za-z0-9\/+=]+/g;
+        const arr = `${result}`.match(base64Reg);
+        gImage.value = arr?.map((i: any) => {
+            return `data:image/png;base64,${i}`;
+        });
+        saveData(textArea.value);
+        exportPromptToShop(textArea.value);
+        sessionStorage.setItem('post_url', postUrl.value);
+    } catch (error) {
+        loading.value = false;
+    }
 };
 
 const saveData = (data: string) => {
@@ -350,6 +469,13 @@ const removeHistory = (index: number) => {
 
 const removeAllHistory = () => {
     $store.set(key, '');
+};
+
+const previewURL = (image = '') => {
+    const { $viewerApi } = useNuxtApp();
+    const $viewer = $viewerApi({
+        images: [image],
+    });
 };
 </script>
 
@@ -431,14 +557,7 @@ const removeAllHistory = () => {
     }
 }
 
-:deep(.el-input) {
-    border-radius: 6px;
-    border: 1px solid hsl(var(--a) / 0.8);
+:deep(.el-col) {
     margin-bottom: 10px;
-}
-
-:deep(.el-textarea) {
-    border-radius: 6px;
-    border: 1px solid hsl(var(--a) / 0.8);
 }
 </style>

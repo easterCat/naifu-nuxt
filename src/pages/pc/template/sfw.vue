@@ -1,28 +1,11 @@
 <template>
     <div class="template-page page">
-        <ClientOnly><AppHeader /></ClientOnly>
+        <ClientOnly><PcAppHeader /></ClientOnly>
         <div class="content">
             <div class="banner-con">
-                <AppBanner placeholder="请输入关键标签"></AppBanner>
+                <PcAppBanner placeholder="请输入关键标签"></PcAppBanner>
             </div>
-            <ClientOnly>
-                <div v-animate-css="{ direction: 'modifySlideInUp' }" class="control-blur-btns">
-                    <button
-                        class="btn btn-sm m-r-10"
-                        :class="[openImageFlur ? 'btn-accent' : 'btn-secondary-30']"
-                        @click="() => (openImageFlur = true)"
-                    >
-                        模糊
-                    </button>
-                    <button
-                        class="btn btn-sm"
-                        :class="[!openImageFlur ? 'btn-accent' : 'btn-secondary-30']"
-                        @click="() => (openImageFlur = false)"
-                    >
-                        原图
-                    </button>
-                </div>
-            </ClientOnly>
+            <PcImageFlur @get-image-flur="getImageFlur"></PcImageFlur>
             <ClientOnly>
                 <el-row v-if="templatesList && templatesList.length" class="list-con" :gutter="20">
                     <el-col
@@ -38,13 +21,20 @@
                         :lg="4"
                         :xl="4"
                     >
-                        <div v-if="tem" class="shadow-xl card card-compact bg-base-100">
+                        <div v-if="tem" class="shadow-xl card card-compact bg-base-100 glass">
                             <figure>
                                 <nuxt-img
                                     class="image"
-                                    :src="tem?.minify_preview"
+                                    :src="
+                                        tem?.min_imgbb_url
+                                            ? tem?.min_imgbb_url
+                                            : tem?.minify_preview
+                                    "
                                     loading="lazy"
-                                    :class="{ 'image-blur': !!openImageFlur }"
+                                    :class="{
+                                        'high-image-blur': imageFlur === 'high',
+                                        'low-image-blur': imageFlur === 'low',
+                                    }"
                                 />
                             </figure>
                             <div class="card-body">
@@ -54,7 +44,10 @@
                                 <p>{{ tem?.author }}</p>
                                 <div class="justify-end card-actions">
                                     <button class="btn btn-accent btn-sm" @click="cardClick(tem)">
-                                        模板详情
+                                        详情
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" @click="exportShop(tem)">
+                                        购物车
                                     </button>
                                 </div>
                             </div>
@@ -106,13 +99,14 @@
 <script lang="ts" setup>
 import { Ref } from 'vue';
 import { ID_INJECTION_KEY } from 'element-plus';
+
 const nuxtApp = useNuxtApp();
 nuxtApp.vueApp.provide(ID_INJECTION_KEY, {
     prefix: Math.floor(Math.random() * 1000),
     current: 0,
 });
+const { setShop } = useShop();
 
-const openImageFlur = ref(true);
 const loading = ref(false);
 const pageIndex = ref(1);
 const pageSize = ref(36);
@@ -121,6 +115,11 @@ const total = ref(0);
 const showPreview = ref(false);
 const templatesList: Ref<any[] | null> = ref([]);
 const currentTemplate: Ref<any | null> = ref(null);
+const imageFlur = ref('high');
+
+onMounted(() => {
+    loadData();
+});
 
 const currentList = computed(() => {
     const arr = Array.from({ length: totalPage.value }, (element, index) => index).slice(
@@ -130,8 +129,12 @@ const currentList = computed(() => {
     return arr;
 });
 
+const getImageFlur = (value: any) => {
+    imageFlur.value = value;
+};
+
 const cardClick = (tem: any) => {
-    currentTemplate.value = { ...tem };
+    currentTemplate.value = { ...tem, preview: tem?.imgbb_url ? tem?.imgbb_url : tem?.preview };
     showPreview.value = true;
 };
 
@@ -149,9 +152,9 @@ const loadData = async () => {
     totalPage.value = Math.ceil(total.value / pageSize.value);
 };
 
-onMounted(() => {
-    loadData();
-});
+const tagsAddComma = (value: string) => {
+    return value.replace(/\s+/g, ', ').replace(/\s*(，+|,+)\s*/g, ', ');
+};
 
 const currentPage = (val: number) => {
     pageIndex.value = val;
@@ -183,27 +186,28 @@ const nextPage = () => {
     pageIndex.value = pageIndex.value + 1;
     loadData();
 };
+
+const exportShop = (tem: any) => {
+    if (tem?.prompt.includes('masterpiece') || tem?.prompt.includes('Masterpiece')) {
+        setShop(tem?.prompt);
+    } else {
+        setShop(`masterpiece, best quality, ${tagsAddComma(tem?.prompt)}`);
+    }
+};
 </script>
 
 <style lang="scss" scoped>
-.image-blur {
-    filter: blur(10px);
+.high-image-blur {
+    filter: blur(8px);
+}
+.low-image-blur {
+    filter: blur(4px);
 }
 .template-page {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
 
-    .control-blur-btns {
-        padding: 18px 0px 10px 2px;
-        .btn {
-            color: #fff;
-        }
-    }
-
-    .btn-secondary-30 {
-        background-color: hsl(var(--s) / 0.3);
-    }
     .list-con {
         min-height: 50vh;
     }

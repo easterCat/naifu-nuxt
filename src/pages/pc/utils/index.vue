@@ -1,6 +1,6 @@
 <template>
     <div class="utils-page page">
-        <ClientOnly><AppHeader /></ClientOnly>
+        <ClientOnly><PcAppHeader /></ClientOnly>
         <ClientOnly>
             <div v-animate-css="{ direction: 'modifySlideInUp' }" class="content">
                 <pc-area-title title="按类别浏览"></pc-area-title>
@@ -26,7 +26,9 @@
         </ClientOnly>
         <ClientOnly>
             <el-dialog v-model="previewVisible" title="预览" width="50%">
-                <img w-full :src="previewImageUrl" alt="Preview Image" />
+                <div class="flex justify-center">
+                    <img w-full :src="previewImageUrl" alt="Preview Image" />
+                </div>
                 <template #footer>
                     <span class="dialog-footer">
                         <el-button @click="previewVisible = false">关闭</el-button>

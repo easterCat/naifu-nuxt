@@ -1,9 +1,14 @@
 <template>
     <div class="chitu-tags-page page">
-        <ClientOnly><AppHeader /></ClientOnly>
+        <ClientOnly><PcAppHeader /></ClientOnly>
         <div class="content">
-            <AppBanner placeholder="搜索标签" @search-change="searchChange" />
-            <pc-area-title title="标签类别"></pc-area-title>
+            <PcAppBanner placeholder="搜索标签" @search-change="searchChange" />
+            <pc-area-title
+                v-animate-css="{
+                    direction: 'modifySlideInUp',
+                }"
+                title="标签类别"
+            ></pc-area-title>
             <div class="type-list">
                 <ClientOnly>
                     <PcAnimationButton
@@ -22,7 +27,12 @@
                     ></PcAnimationButton>
                 </ClientOnly>
             </div>
-            <pc-area-title title="标签列表">
+            <pc-area-title
+                v-animate-css="{
+                    direction: 'modifySlideInUp',
+                }"
+                title="标签列表"
+            >
                 <template #titleSide>
                     <el-switch
                         v-model="showImage"

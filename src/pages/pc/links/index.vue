@@ -1,12 +1,12 @@
 <template>
     <div class="links-page page bg-base-100">
-        <ClientOnly><AppHeader /></ClientOnly>
-        <AppAnimate>
+        <ClientOnly><PcAppHeader /></ClientOnly>
+        <PcAppAnimate>
             <div class="content">
                 <pc-link-list :show-left-menu="true"></pc-link-list>
             </div>
-        </AppAnimate>
-        <AppFooter />
+        </PcAppAnimate>
+        <PcAppFooter />
     </div>
 </template>
 

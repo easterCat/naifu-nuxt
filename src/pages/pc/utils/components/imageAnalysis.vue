@@ -1,11 +1,11 @@
 <template>
     <div class="tranfer-con">
         <div class="button-con">
-            <button class="btn btn-secondary m-r-10 m-b-10" @click="clearPrompt">
+            <button class="btn btn-secondary m-r-10 m-b-10" @click="clearUploadData">
                 清空
                 <Icon class="m-l-6" name="ant-design:delete-filled"></Icon>
             </button>
-            <button class="btn btn-accent m-r-10 m-b-10" @click="exportPrompt">
+            <button class="btn btn-accent m-r-10 m-b-10" @click="exportPromptToShop">
                 导出购物车
                 <Icon class="m-l-6" name="clarity:shopping-cart-solid-badged"></Icon>
             </button>
@@ -42,6 +42,7 @@
                                     class="el-upload-list__item-thumbnail"
                                     :src="file.url"
                                     alt=""
+                                    @click="previewURL(file.url)"
                                 />
                                 <span class="m-l-6">{{ file.name }}</span>
                                 <input
@@ -59,6 +60,13 @@
                                     ></Icon>
                                 </span>
                                 <span class="m-l-10">
+                                    <Icon
+                                        name="material-symbols:content-copy"
+                                        size="28"
+                                        @click="handlePictureCopy(file)"
+                                    />
+                                </span>
+                                <span class="m-l-8">
                                     <Icon
                                         name="ic:baseline-delete"
                                         size="28"
@@ -95,16 +103,25 @@
 import { onMounted, Ref } from 'vue';
 
 import type { UploadProps, UploadUserFile, UploadFile, UploadFiles } from 'element-plus';
-import { errorNotification } from '@/utils/nitification';
+import { errorNotification } from '@/utils/notification';
 
 interface Promptitem {
     key?: string;
     value?: string;
+    tags?: any;
 }
 
 interface HistoryItem {
     prompt?: string | undefined;
     time?: string | undefined;
+}
+
+interface UploadFileWithTag extends UploadFile {
+    tags?: any[];
+}
+
+interface UploadUserFileWithTag extends UploadUserFile {
+    tags?: any[];
 }
 
 const $emit = defineEmits(['setPreview']);
@@ -114,20 +131,23 @@ const { DanbooruApi } = useApi();
 const config = useRuntimeConfig();
 const { $store } = useNuxtApp();
 const { setShop } = useShop();
+const { copy } = useCopy();
+
 const uploadImageApi = ref(`${config.public.FLASK_BASE_API}/danbooru/upload`);
 const promptHistory: Ref<HistoryItem[]> = ref<HistoryItem[]>([]);
 const promptHistoryLength: Ref<number> = ref(0);
-const fileList = ref<UploadUserFile[]>([]);
+const fileList = ref<UploadUserFileWithTag[]>([]);
 const curRawFile = ref<string>('');
 const promptList: Ref<Promptitem[]> = ref<Promptitem[]>([]);
 const loading: Ref<boolean> = ref(false);
 
 onMounted(() => {
-    getData();
+    initHistoryData();
 });
 
-const changeCurFile = (file: UploadFile) => {
+const changeCurFile = (file: UploadFileWithTag) => {
     curRawFile.value = file.name;
+    promptList.value = file.tags || [];
 };
 
 const uploadSuccess = (response: any, uploadFile: UploadFile, uploadFiles: UploadFiles) => {
@@ -149,7 +169,6 @@ const analysisImage = async () => {
     }
     if (loading.value) return;
     loading.value = true;
-
     const result = await DanbooruApi.analysisImage({
         name: curRawFile.value,
     });
@@ -158,29 +177,44 @@ const analysisImage = async () => {
     if (code === 200) {
         const { tags } = data;
         promptList.value = tags;
+        const findIndex = fileList.value.findIndex((file: any) => {
+            return file.name === curRawFile.value;
+        });
+        fileList.value[findIndex].tags = tags;
     }
 };
 
-const clearPrompt = () => {
+const clearUploadData = () => {
     curRawFile.value = '';
     fileList.value = [];
     promptList.value = [];
 };
 
-const exportPrompt = () => {
+const exportPromptToShop = () => {
     const s = promptList.value.map((i: any) => i.key).join(', ');
     setShop(s);
 };
 
-const getData = () => {
+const initHistoryData = () => {
     if ($store.get(key)) {
         promptHistory.value = JSON.parse($store.get(key));
         promptHistoryLength.value = promptHistory.value.length;
     }
 };
 
+const handlePictureCopy: UploadProps['onPreview'] = (uploadFile) => {
+    previewURL(uploadFile.url);
+};
+
 const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
-    $emit('setPreview', uploadFile.url);
+    previewURL(uploadFile.url);
+};
+
+const previewURL = (image = '') => {
+    const { $viewerApi } = useNuxtApp();
+    const $viewer = $viewerApi({
+        images: [image],
+    });
 };
 
 const handlePictureRemove = (uploadFile: UploadFile) => {

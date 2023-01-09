@@ -1,6 +1,6 @@
 <template>
     <div class="draw-page page">
-        <ClientOnly><AppHeader /></ClientOnly>
+        <ClientOnly><PcAppHeader /></ClientOnly>
         <ClientOnly>
             <div v-animate-css="{ direction: 'modifySlideInUp' }" class="content">
                 <PcAreaTitle title="生成图片"></PcAreaTitle>

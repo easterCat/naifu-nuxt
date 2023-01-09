@@ -1,8 +1,8 @@
 <template>
     <div class="eh-tags-page page">
-        <ClientOnly><AppHeader /></ClientOnly>
+        <ClientOnly><PcAppHeader /></ClientOnly>
         <div class="content">
-            <AppBanner placeholder="搜索标签" @search-change="searchChange" />
+            <PcAppBanner placeholder="搜索标签" @search-change="searchChange" />
             <EHentai :search-text="searchText1"></EHentai>
             <EHentaiMore :search-text="searchText2"></EHentaiMore>
         </div>

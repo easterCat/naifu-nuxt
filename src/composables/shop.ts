@@ -1,5 +1,5 @@
 import { Action, ElMessageBox } from 'element-plus';
-import { notification, warnNotification } from '@/utils/nitification';
+import { notification, warnNotification } from '@/utils/notification';
 
 // 大型项目中，建议使用pinia
 export const useShop = () => {

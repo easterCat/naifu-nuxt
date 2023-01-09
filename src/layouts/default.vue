@@ -1,5 +1,5 @@
 <template>
-    <div class="default-layout">
+    <div class="pc-default-layout">
         <slot />
         <ClientOnly>
             <PcFixMenu></PcFixMenu>
@@ -10,7 +10,7 @@
 <script lang="ts" setup></script>
 
 <style scoped lang="scss">
-.default-layout {
+.pc-default-layout {
     height: 100%;
     width: 100%;
 }

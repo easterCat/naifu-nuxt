@@ -1,6 +1,6 @@
 <template>
     <div>
-        <app-animate>
+        <PcAppAnimate>
             <div v-if="modelValue" class="template-preview">
                 <div class="preview-wrap" @click="close"></div>
                 <div class="preview-con">
@@ -92,12 +92,12 @@
                         </div>
                         <div class="button-con">
                             <button class="btn btn-secondary m-r-10" @click="close">关闭</button>
-                            <button class="btn btn-accent" @click="exportShop">导入购物车</button>
+                            <button class="btn btn-primary" @click="exportShop">导入购物车</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </app-animate>
+        </PcAppAnimate>
     </div>
 </template>
 
@@ -136,6 +136,7 @@ const move = () => {
 
 const exportShop = () => {
     setShop(props.currentTemplate?.prompt);
+    close();
 };
 
 onMounted(() => {
@@ -174,7 +175,7 @@ onMounted(() => {
         z-index: 2;
         width: 1200px;
         border-radius: 10px;
-        padding: 30px 30px 30px 30px;
+        padding: 30px;
         --tw-bg-opacity: 1;
         background-color: hsl(var(--b1) / var(--tw-bg-opacity));
         box-shadow: rgba(149, 157, 165, 0.2) 0px 4px 20px;
@@ -198,8 +199,8 @@ onMounted(() => {
 
         .button-con {
             width: 100%;
-            height: 100px;
-            padding-top: 50px;
+            height: 80px;
+            padding-top: 30px;
             display: flex;
             justify-content: center;
         }
@@ -238,13 +239,14 @@ onMounted(() => {
         .image-con {
             position: absolute;
             top: 0;
-            max-height: calc(100% - 100px);
+            width: 100%;
+            max-height: calc(100% - 80px);
             display: flex;
             justify-content: center;
 
             img {
-                min-width: 512px;
-                height: 100%;
+                width: auto;
+                height: auto;
             }
         }
 

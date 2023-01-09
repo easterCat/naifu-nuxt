@@ -20,6 +20,16 @@ class AuthApi extends Request {
         const result = await this.post('/auth/token/refresh');
         return result;
     }
+
+    async getUserInfo() {
+        const result = await this.get('/auth/user/info');
+        return result;
+    }
+
+    async getUserFavorites() {
+        const result = await this.get('/auth/user/favorite');
+        return result;
+    }
 }
 
 export default new AuthApi();

@@ -11,24 +11,24 @@ class LinkApi extends Request {
             return { links: JSON.parse(result), total: null };
         }
         if (from === 'database') {
-            const result = await this.get('/link/', { pageIndex: 1, pageSize: 1000 });
+            const result = await this.get('/link/list', { pageIndex: 1, pageSize: 1000 });
             const { data } = toRaw(result);
             return { links: data.list, total: data.total };
         }
     }
 
     async addLink(body: any) {
-        const result = await this.post('/link/', body);
+        const result = await this.post('/link/list', body);
         return result;
     }
 
     async updateLink(body: any) {
-        const result = await this.put('/link/', body);
+        const result = await this.put('/link/list', body);
         return result;
     }
 
     async deleteLink(body: any) {
-        const result = await this.delete(`/link/`, body);
+        const result = await this.delete(`/link/list`, body);
         return result;
     }
 }

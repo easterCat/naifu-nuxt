@@ -26,10 +26,10 @@ pnpm install --shamefully-hoist
 
 Start the development server on
 
-- Local: <http://localhost:3000/nuxt3-tag/>
-- Network: <http://172.18.234.34:3000/nuxt3-tag/>
+- Local: <http://localhost:3000/naifu/>
+- Network: <http://172.18.234.34:3000/naifu/>
 
-> 为了使用 github page 的二级页面, 需要变更 baseURL: '/nuxt3-tag'
+> 为了使用 github page 的二级页面, 需要变更 baseURL: '/naifu'
 
 ```bash
 yarn dev
@@ -45,7 +45,7 @@ yarn generate
 
 > 将打包出的 dist 发布到 github page 即可
 
-- github页面 <https://eastercat.github.io/nuxt3-tag/pc/home>
+- github页面 <https://eastercat.github.io/naifu/pc/home>
 - 体验地址 <https://www.ptg.life>
 
 Checkout the [deployment documentation](https://v3.nuxtjs.org/guide/deploy/presets) for more information.
@@ -66,7 +66,7 @@ yarn preview
 
 Checkout the [deployment documentation](https://v3.nuxtjs.org/guide/deploy/presets) for more information.
 
-## 使用的文档或网站
+### 使用的文档或网站
 
 - [element-plus](https://element-plus.gitee.io/zh-CN/component/button.html)
 - [daisyui](https://daisyui.com/docs/themes/?lang=zh_cn)
@@ -86,6 +86,11 @@ Checkout the [deployment documentation](https://v3.nuxtjs.org/guide/deploy/prese
 - [这样封装列表 hooks,一天可以开发 20 个页面](https://juejin.cn/post/7165467345648320520)
 - [KZ-API 接口服务](https://kuizuo.cn/use-nuxt3-build-api-server/)
 - [在线正则表达式测试](https://tool.oschina.net/regex/#)
+
+### 使用的图床
+
+- [牛图网,挺好用的图床](https://niupic.com/)
+- [imgbb图床,外链会限制大小180](https://imgbb.com/)
 
 ### 设计网站
 

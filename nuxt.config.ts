@@ -30,7 +30,7 @@ export default defineNuxtConfig({
         dir: 'assets/imgs',
     },
     app: {
-        baseURL: '/nuxt3-tag',
+        baseURL: '/naifu',
         head: {
             charset: 'utf-8',
             viewport:
@@ -40,7 +40,7 @@ export default defineNuxtConfig({
                 {
                     rel: 'icon',
                     type: 'image/x-icon',
-                    href: '/nuxt3-tag/dute_favicon_32x32.ico',
+                    href: '/naifu/dute_favicon_32x32.ico',
                 },
                 {
                     rel: 'stylesheet',

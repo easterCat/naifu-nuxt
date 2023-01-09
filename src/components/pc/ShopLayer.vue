@@ -1,6 +1,6 @@
 <template>
     <div>
-        <app-animate name="fadeIn">
+        <PcAppAnimate name="fadeIn">
             <div v-if="modelValue" class="shop-card">
                 <div class="shop-card-header">
                     <span>
@@ -71,7 +71,7 @@
                     <div v-if="gImage" class="right"><img :src="gImage" alt="" /></div>
                 </div>
             </div>
-        </app-animate>
+        </PcAppAnimate>
     </div>
 </template>
 

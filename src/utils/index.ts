@@ -34,3 +34,13 @@ export const debounce = (fn: Function, delay: number): Function => {
 export const sleep = (time: number) => {
     return new Promise((resolve) => setTimeout(resolve, time));
 };
+
+// 判断手机端还是pc端
+export const isMobile = () => {
+    if (process.client) {
+        const flag = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent,
+        );
+        return flag;
+    }
+};

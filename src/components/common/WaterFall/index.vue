@@ -5,7 +5,7 @@
                 <ul class="image-list">
                     <li
                         v-for="(image, iIndex) in waterFallOption.images"
-                        :key="iIndex"
+                        :key="image?.id"
                         ref="domRefs"
                         class="image-item"
                         :style="`width:${colWidth}px;height:${image._height}px;top:${image._top}px;left:${image._left}px;`"
@@ -16,42 +16,47 @@
                             @mouseleave="leaveImageCon"
                         >
                             <img
-                                :date-src="image?.minify_preview"
+                                :src="
+                                    image?.min_imgbb_url
+                                        ? image?.min_imgbb_url
+                                        : image?.minify_preview
+                                "
                                 :alt="image?.prompt"
-                                :class="{ 'image-blur': !!flur }"
+                                :class="{
+                                    'high-image-blur': flur === 'high',
+                                    'low-image-blur': flur === 'low',
+                                }"
                             />
-                            <Transition name="fade-q">
-                                <div v-if="hoverIndex === iIndex" class="item-wrapper">
-                                    <ClientOnly>
-                                        <div
-                                            v-animate-css="{ direction: 'modifySlideInDown' }"
-                                            class="icon-con"
-                                        >
-                                            <span v-if="hoverIndex === iIndex">
-                                                <i-ep-search></i-ep-search>
-                                            </span>
-                                            <span>
-                                                <i-ep-star
-                                                    :class="{
-                                                        liked: image?.like_address?.includes(ip),
-                                                    }"
-                                                    @click="favorite(image?.id, iIndex)"
-                                                ></i-ep-star>
-                                                <i-ep-more @click="preview(image)"></i-ep-more>
-                                            </span>
-                                        </div>
-                                    </ClientOnly>
-                                    <ClientOnly>
-                                        <div
-                                            v-animate-css="{ direction: 'modifySlideInUp' }"
-                                            class="text-con"
-                                        >
-                                            <p>{{ image?.name }}</p>
-                                            <p>{{ image?.prompt }}</p>
-                                        </div>
-                                    </ClientOnly>
-                                </div>
-                            </Transition>
+                            <div v-if="hoverIndex === iIndex" class="item-wrapper">
+                                <ClientOnly>
+                                    <div
+                                        v-animate-css="{ direction: 'modifySlideInDown' }"
+                                        class="icon-con"
+                                    >
+                                        <span v-if="hoverIndex === iIndex">
+                                            <i-ep-search></i-ep-search>
+                                        </span>
+                                        <span>
+                                            <i-ep-star
+                                                :class="{
+                                                    liked: favoriteIds?.includes(image?.id + ''),
+                                                }"
+                                                @click="favorite(image?.id, iIndex)"
+                                            ></i-ep-star>
+                                            <i-ep-more @click="preview(image)"></i-ep-more>
+                                        </span>
+                                    </div>
+                                </ClientOnly>
+                                <ClientOnly>
+                                    <div
+                                        v-animate-css="{ direction: 'modifySlideInUp' }"
+                                        class="text-con"
+                                    >
+                                        <p>{{ image?.name }}</p>
+                                        <p>{{ image?.prompt }}</p>
+                                    </div>
+                                </ClientOnly>
+                            </div>
                         </div>
                     </li>
                 </ul>
@@ -85,7 +90,9 @@ interface ImageItem {
     n_prompt_zh: string;
     seed: string;
     preview: string;
+    imgbb_url: string;
     minify_preview: string;
+    min_imgbb_url: string;
     sampler: string;
     skip: string;
     size: string;
@@ -96,6 +103,7 @@ interface ImageItem {
     _top?: number;
     _left?: number;
     _error?: boolean;
+    _finished?: boolean;
 }
 
 interface WaterFallOption {
@@ -110,7 +118,7 @@ interface WaterFallOption {
 const { $store }: any = useNuxtApp();
 const route = useRoute();
 
-const props = defineProps(['datas', 'flur', 'loading', 'searchText']);
+const props = defineProps(['datas', 'flur', 'loading', 'searchText', 'favoriteIds']);
 const emits = defineEmits(['load', 'preview', 'favorite']);
 
 const waterFallOption: WaterFallOption = reactive({
@@ -125,7 +133,6 @@ const waterFallOption: WaterFallOption = reactive({
 watch(
     () => props.datas,
     (val) => {
-        console.log('val :>> ', val);
         if (route.name !== 'pc-home') return;
         if (val && val.length > 0) {
             if (val.length <= 50) {
@@ -155,7 +162,6 @@ const scrollContainer: Ref<HTMLElement> = ref(window.document.body);
 const hoverIndex: Ref<number | null> = ref(null);
 const pageIndex = ref(1);
 const pageSize = ref(50);
-
 const ip = ref('');
 const imageList: Ref<ImageItem[]> = ref([]);
 
@@ -173,13 +179,7 @@ const preview = (tem: any) => {
 
 const favorite = async (id: number, index: number) => {
     emits('favorite', id);
-    const address = imageList.value[index].like_address;
     const like = imageList.value[index].like;
-    if (address) {
-        imageList.value[index].like_address = `${address},${ip.value}`;
-    } else {
-        imageList.value[index].like_address = `${ip.value}`;
-    }
     imageList.value[index].like = like + 1;
 };
 
@@ -199,12 +199,19 @@ const renderImage = () => {
         if (!cur) return;
 
         const imgEl = cur.children[0].children[0];
-        imgEl.src = imgEl.getAttribute('date-src');
         imgEl.style.transition = 'all 0.5s ease-in-out';
-        imgEl.onload = () => {
-            imgEl.style.opacity = 1;
-            imgEl.style.transform = 'scale(1)';
-        };
+        if (imgEl.complete) {
+            setTimeout(() => {
+                imgEl.style.opacity = 1;
+                imgEl.style.transform = 'scale(1)';
+            }, 300);
+        } else {
+            imgEl.onload = () => {
+                console.log('imgEl.complete :>> ', imgEl.complete);
+                imgEl.style.opacity = 1;
+                imgEl.style.transform = 'scale(1)';
+            };
+        }
     }
     waterFallOption.beginIndex = imgRefs.length;
 };
@@ -240,6 +247,7 @@ const waterFall = () => {
             left = i * colWidth.value + (i % waterFallOption.columnNumber);
         } else {
             const minHeight = Math.min.apply(null, waterFallOption.colsHeightArr);
+            console.log('minHeight :>> ', minHeight);
             const minIndex = waterFallOption.colsHeightArr.indexOf(minHeight);
             top = minHeight;
             left = minIndex * colWidth.value;
@@ -275,8 +283,15 @@ const preload = () => {
                 preloaded();
             }
         } else {
+            if (item._finished) {
+                waterFallOption.loadedCount = waterFallOption.loadedCount + 1;
+                if (waterFallOption.imagesLen === waterFallOption.loadedCount) {
+                    preloaded();
+                }
+                return;
+            }
             const img = new Image();
-            img.src = item.minify_preview;
+            img.src = item?.min_imgbb_url ? item?.min_imgbb_url : item.minify_preview;
             img.onload = img.onerror = (e) => {
                 item._width = colWidth.value;
                 item._height =
@@ -287,7 +302,7 @@ const preload = () => {
                 if ((e as Event).type === 'error') {
                     item._error = true;
                 }
-
+                item._finished = true;
                 waterFallOption.loadedCount = waterFallOption.loadedCount + 1;
                 if (waterFallOption.imagesLen === waterFallOption.loadedCount) {
                     preloaded();
@@ -344,11 +359,11 @@ const initCol = () => {
     const width = document.body.clientWidth;
     if (width > 3500) {
         waterFallOption.columnNumber = 10;
-    } else if (width < 3500 && width > 2500) {
+    } else if (width < 3500 && width > 2800) {
         waterFallOption.columnNumber = 8;
-    } else if (width < 2500 && width > 2000) {
+    } else if (width < 2800 && width > 2200) {
         waterFallOption.columnNumber = 7;
-    } else if (width < 2000 && width > 1700) {
+    } else if (width < 2200 && width > 1700) {
         waterFallOption.columnNumber = 6;
     } else if (width < 1700 && width > 1380) {
         waterFallOption.columnNumber = 5;
@@ -395,10 +410,12 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.image-blur {
-    filter: blur(10px);
+.high-image-blur {
+    filter: blur(8px);
 }
-
+.low-image-blur {
+    filter: blur(4px);
+}
 .image-list {
     display: grid;
     position: relative;
@@ -516,7 +533,7 @@ onUnmounted(() => {
         }
 
         .liked {
-            color: hsl(var(--sf) / 1);
+            color: hsl(var(--p) / 1);
             font-weight: bold;
             filter: brightness(1.8);
         }
@@ -540,7 +557,7 @@ onUnmounted(() => {
     display: inline-block;
     position: absolute;
     top: 0;
-    background-color: rgba(131, 117, 87, 1);
+    background-color: hsl(var(--p) / 1);
     border-radius: 100%;
     animation: bounce 2s infinite ease-in-out;
 }

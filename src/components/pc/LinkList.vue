@@ -8,7 +8,7 @@
             >
                 <ul>
                     <li
-                        v-for="(item, index) in types"
+                        v-for="(item, index) in linkStore.typeList"
                         :key="index"
                         v-scroll-to="{
                         target: `.part:nth-child(${index + 1}) > h2`,
@@ -32,7 +32,7 @@
             <div v-animate-css="{ direction: 'modifySlideInRight' }" class="link-right">
                 <div class="right-linear"></div>
                 <div class="part-list">
-                    <template v-for="(typeItem, tIndex) in types" :key="typeItem">
+                    <template v-for="(typeItem, tIndex) in linkStore.typeList" :key="typeItem">
                         <div id="media" class="part" :data-title="typeItem" :data-index="tIndex">
                             <h2 class="">
                                 <strong>{{ typeItem }}</strong>
@@ -114,12 +114,14 @@ import { onMounted, Ref } from 'vue';
 import { ID_INJECTION_KEY } from 'element-plus';
 import type { FormInstance } from 'element-plus';
 import none from '~/assets/imgs/none.png';
-import { useIndexStore } from '@/store/index';
+import { useIndexStore } from '~~/src/store/index';
+import { useLinkStore } from '~~/src/store/link';
 
 export interface API {
     refresh: any;
 }
 
+const { LinkApi } = useApi();
 const nuxtApp = useNuxtApp();
 nuxtApp.vueApp.provide(ID_INJECTION_KEY, {
     prefix: Math.floor(Math.random() * 1000),
@@ -143,15 +145,7 @@ defineProps({
 });
 const indexStore = useIndexStore();
 const showEditBtn = ref(false);
-const { LinkApi } = useApi();
-const { links }: any = await LinkApi.getLinks();
-const linkList: Ref<LinkItem[]> = ref([{ name: '', href: '' }]);
-const types: Ref<any[]> = ref([]);
 const typeActive = ref(0);
-
-linkList.value = links;
-types.value = [...new Set(links.map((i: any) => i.link_type))];
-
 const showAddBtn = ref(false);
 const showDialog = ref(false);
 const operation = ref('');
@@ -162,10 +156,20 @@ const type = ref('');
 const hot = ref(false);
 const icon = ref('');
 const id: Ref<number | null> = ref(null);
+let linkStore: any = null;
+
+const getLinkList = async () => {
+    if (!linkStore.linkList.length) {
+        const { links }: any = await LinkApi.getLinks();
+        linkStore.setLinks(links);
+        linkStore.setTypes([...new Set(links.map((i: any) => i.link_type))]);
+    }
+};
 
 const refresh = async () => {
     const { links }: any = await LinkApi.getLinks();
-    linkList.value = links;
+    linkStore.setLinks(links);
+    linkStore.setTypes([...new Set(links.map((i: any) => i.link_type))]);
 };
 
 const changeType = (index: number) => {
@@ -260,13 +264,15 @@ const editLink = (data: any) => {
 
 const filterList = (fil: any) => {
     if (fil) {
-        return [...linkList.value.filter((i: any) => i.link_type === fil)];
+        return [...linkStore.linkList.filter((i: any) => i.link_type === fil)];
     } else {
         return [];
     }
 };
 
 onMounted(() => {
+    linkStore = useLinkStore();
+    getLinkList();
     if (`${indexStore.roleId}` === '1') {
         showAddBtn.value = true;
         showEditBtn.value = true;
