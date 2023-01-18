@@ -77,7 +77,7 @@
                                 :key="tIndex"
                                 v-animate-css="{
                                     direction: 'modifySlideInUp',
-                                    delay: tIndex * 50,
+                                    delay: tIndex * 30,
                                 }"
                                 :xs="24"
                                 :sm="12"

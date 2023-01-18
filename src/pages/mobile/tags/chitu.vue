@@ -16,7 +16,7 @@
                         :key="mIndex"
                         v-animate-css="{
                             direction: 'modifySlideInUp',
-                            delay: mIndex * 40,
+                            delay: mIndex * 30,
                         }"
                         :index="mIndex + ''"
                         :button-style="1"
@@ -53,7 +53,7 @@
                             :key="oIndex"
                             v-animate-css="{
                                 direction: 'modifySlideInUp',
-                                delay: oIndex * 40,
+                                delay: oIndex * 30,
                             }"
                             class="tag-item-img ll-media bg-base-100"
                             :data-index="oIndex"
@@ -119,7 +119,7 @@
                             :key="oIndex"
                             v-animate-css="{
                                 direction: 'modifySlideInUp',
-                                delay: oIndex * 40,
+                                delay: oIndex * 30,
                             }"
                             class="tag-item-img ll-media bg-base-100"
                             :data-index="oIndex"

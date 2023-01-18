@@ -60,7 +60,7 @@
                                     <button class="btn btn-accent btn-sm" @click="cardClick(tem)">
                                         详情
                                     </button>
-                                    <button class="btn btn-primary btn-sm" @click="exportShop(tem)">
+                                    <button class="btn btn-primary btn-sm" @click="exportPromptToShop(tem)">
                                         购物车
                                     </button>
                                 </div>
@@ -199,7 +199,7 @@ const loadData = async () => {
     totalPage.value = Math.ceil(total.value / pageSize.value);
 };
 
-const exportShop = (tem: any) => {
+const exportPromptToShop = (tem: any) => {
     if (tem?.prompt.includes('masterpiece') || tem?.prompt.includes('Masterpiece')) {
         setShop(tem?.prompt);
     } else {

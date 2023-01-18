@@ -5,7 +5,7 @@
                 清空
                 <Icon class="m-l-6" name="ant-design:delete-filled"></Icon>
             </button>
-            <button class="btn btn-accent btn-sm m-r-10 m-b-10" @click="exportPrompt">
+            <button class="btn btn-accent btn-sm m-r-10 m-b-10" @click="exportPromptToShop">
                 导出购物车
                 <Icon class="m-l-6" name="clarity:shopping-cart-solid-badged"></Icon>
             </button>
@@ -161,7 +161,7 @@ const clearPrompt = () => {
     promptList.value = [];
 };
 
-const exportPrompt = () => {
+const exportPromptToShop = () => {
     const s = promptList.value.map((i: any) => i.key).join(', ');
     setShop(s);
 };

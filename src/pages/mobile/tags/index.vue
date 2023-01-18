@@ -16,7 +16,7 @@
                         :key="mIndex"
                         v-animate-css="{
                             direction: 'modifySlideInUp',
-                            delay: mIndex * 40,
+                            delay: mIndex * 30,
                         }"
                         :index="mIndex + ''"
                         :button-style="1"

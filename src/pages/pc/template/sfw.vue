@@ -3,7 +3,10 @@
         <ClientOnly><PcAppHeader /></ClientOnly>
         <div class="content">
             <div class="banner-con">
-                <PcAppBanner placeholder="请输入关键标签"></PcAppBanner>
+                <PcAppBanner
+                    placeholder="请输入关键标签"
+                    @search-change="searchChange"
+                ></PcAppBanner>
             </div>
             <PcImageFlur @get-image-flur="getImageFlur"></PcImageFlur>
             <ClientOnly>
@@ -43,11 +46,24 @@
                                 </h2>
                                 <p>{{ tem?.author }}</p>
                                 <div class="justify-end card-actions">
-                                    <button class="btn btn-accent btn-sm" @click="cardClick(tem)">
-                                        详情
+                                    <button
+                                        class="btn btn-secondary btn-sm"
+                                        @click="likeTemplate(tem?.id)"
+                                    >
+                                        {{
+                                            indexStore.favoriteIds?.includes(tem?.id + '')
+                                                ? '取消收藏'
+                                                : '收藏'
+                                        }}
                                     </button>
-                                    <button class="btn btn-primary btn-sm" @click="exportShop(tem)">
+                                    <button
+                                        class="btn btn-accent btn-sm"
+                                        @click="exportPromptToShop(tem)"
+                                    >
                                         购物车
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" @click="cardClick(tem)">
+                                        详情
                                     </button>
                                 </div>
                             </div>
@@ -98,7 +114,9 @@
 
 <script lang="ts" setup>
 import { Ref } from 'vue';
+import lodash from 'lodash';
 import { ID_INJECTION_KEY } from 'element-plus';
+import { useIndexStore } from '~~/src/store/index';
 
 const nuxtApp = useNuxtApp();
 nuxtApp.vueApp.provide(ID_INJECTION_KEY, {
@@ -106,6 +124,8 @@ nuxtApp.vueApp.provide(ID_INJECTION_KEY, {
     current: 0,
 });
 const { setShop } = useShop();
+const { TemplateApi } = useApi();
+let indexStore: any = null;
 
 const loading = ref(false);
 const pageIndex = ref(1);
@@ -116,8 +136,10 @@ const showPreview = ref(false);
 const templatesList: Ref<any[] | null> = ref([]);
 const currentTemplate: Ref<any | null> = ref(null);
 const imageFlur = ref('high');
+const searchText = ref('');
 
 onMounted(() => {
+    indexStore = useIndexStore();
     loadData();
 });
 
@@ -151,6 +173,21 @@ const loadData = async () => {
     total.value = result.total;
     totalPage.value = Math.ceil(total.value / pageSize.value);
 };
+
+const searchChange = lodash.debounce(async (val: any) => {
+    if (val === searchText.value) return;
+    templatesList.value = [];
+    searchText.value = val;
+    loading.value = true;
+    const result: any = await TemplateApi.getTemplates({
+        pageIndex: pageIndex.value,
+        pageSize: pageSize.value,
+        searchTag: searchText.value,
+    });
+    loading.value = false;
+    templatesList.value =
+        result?.templates && result?.templates.length !== 0 ? result?.templates : [];
+}, 1200);
 
 const tagsAddComma = (value: string) => {
     return value.replace(/\s+/g, ', ').replace(/\s*(，+|,+)\s*/g, ', ');
@@ -187,11 +224,21 @@ const nextPage = () => {
     loadData();
 };
 
-const exportShop = (tem: any) => {
+const exportPromptToShop = (tem: any) => {
     if (tem?.prompt.includes('masterpiece') || tem?.prompt.includes('Masterpiece')) {
         setShop(tem?.prompt);
     } else {
         setShop(`masterpiece, best quality, ${tagsAddComma(tem?.prompt)}`);
+    }
+};
+
+const likeTemplate = async (id: number) => {
+    const result: any = await TemplateApi.likeTemplateById({
+        templateId: id,
+        userId: indexStore?.userId,
+    });
+    if (result.code === 200) {
+        indexStore.addFavoriteById(result.data);
     }
 };
 </script>

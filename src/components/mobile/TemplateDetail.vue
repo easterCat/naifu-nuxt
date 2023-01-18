@@ -98,7 +98,7 @@
                         >
                             查看更多
                         </button>
-                        <button class="btn btn-primary btn-sm" @click="exportShop">
+                        <button class="btn btn-primary btn-sm" @click="exportPromptToShop">
                             导入购物车
                         </button>
                     </div>
@@ -144,7 +144,7 @@ const move = () => {
     document.removeEventListener('touchmove', mo, false);
 };
 
-const exportShop = () => {
+const exportPromptToShop = () => {
     setShop(props.currentTemplate?.prompt);
 };
 

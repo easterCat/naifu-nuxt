@@ -17,7 +17,7 @@
             <button class="btn btn-accent btn-sm m-r-10 m-b-10" @click="shopImport">
                 购物车导入
             </button>
-            <button class="btn btn-accent btn-sm m-r-10 m-b-10" @click="exportShop">
+            <button class="btn btn-accent btn-sm m-r-10 m-b-10" @click="exportPromptToShop">
                 导出购物车
             </button>
             <button class="btn btn-accent btn-sm m-r-10 m-b-10" @click="tagsAddComma">
@@ -214,7 +214,7 @@ const shopImport = () => {
     saveData(textArea.value);
 };
 
-const exportShop = () => {
+const exportPromptToShop = () => {
     setShop(formatTextArea.value);
 };
 

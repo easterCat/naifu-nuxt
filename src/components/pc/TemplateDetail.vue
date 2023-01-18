@@ -240,13 +240,14 @@ onMounted(() => {
             position: absolute;
             top: 0;
             width: 100%;
-            max-height: calc(100% - 80px);
+            height: calc(100% - 80px);
             display: flex;
             justify-content: center;
 
             img {
                 width: auto;
-                height: auto;
+                max-height: calc(100% - 10px);
+                border-radius: 10px;
             }
         }
 
@@ -255,11 +256,6 @@ onMounted(() => {
             bottom: 0;
             display: flex;
             justify-content: center;
-        }
-
-        img {
-            max-height: calc(100% - 10px);
-            border-radius: 10px;
         }
     }
 }
