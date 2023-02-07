@@ -56,7 +56,7 @@
             </el-col>
         </el-row>
 
-        <pc-area-title title="Prompt列表"></pc-area-title>
+        <mobile-area-title title="Prompt列表"></mobile-area-title>
         <div v-if="promptList && promptList?.length" class="tags-con">
             <div class="m-b-10">
                 <button class="btn btn-md btn-accent" @click="tagsReplacePrompt">
@@ -73,11 +73,11 @@
         <div v-else class="tags-con">
             <p class="no-data">暂无列表</p>
         </div>
-        <pc-area-title title="Prompt记录">
+        <mobile-area-title title="Prompt记录">
             <template #titleSide>
                 <span class="title-side">总数:{{ promptHistoryLength }}条</span>
             </template>
-        </pc-area-title>
+        </mobile-area-title>
 
         <div v-if="promptHistory && promptHistory?.length" class="history-con">
             <div class="button-con">

@@ -387,16 +387,15 @@ onBeforeUnmount(() => {
 .header {
     position: sticky;
     top: 0px;
-    z-index: 1001;
-    width: 100%;
-    box-shadow: hsl(var(--p) / 0.2) 0px 48px 100px 0px;
+    z-index: 3;
 
     .header-con {
-        width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        width: 100%;
         height: 72px;
+        padding: 0 20px;
     }
 
     .header-menu {

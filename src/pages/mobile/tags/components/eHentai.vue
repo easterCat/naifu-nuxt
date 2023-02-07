@@ -1,6 +1,6 @@
 <template>
     <div class="eh-con">
-        <pc-area-title title="EH标签列表">
+        <mobile-area-title title="EH标签列表">
             <template #titleSide>
                 <el-switch
                     v-model="showHentai"
@@ -10,9 +10,9 @@
                     active-text="开启"
                     class="title-side"
                 />
-                <span class="eh-title-side-tip">(577个标签版本,高h,慎重)</span>
+                <span class="eh-title-side-tip">(577标签)</span>
             </template>
-        </pc-area-title>
+        </mobile-area-title>
         <div v-if="showHentai" class="tag-list">
             <div v-for="(e, eIndex) in ehLists" :key="eIndex" class="tag-item" @click="copy(e?.v)">
                 <div class="text-con">

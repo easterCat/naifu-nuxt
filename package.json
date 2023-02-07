@@ -28,7 +28,7 @@
         "autoprefixer": "^10.4.13",
         "daisyui": "^2.42.1",
         "env-cmd": "^10.1.0",
-        "eslint": "^8.29.0",
+        "eslint": "^8.33.0",
         "eslint-config-prettier": "~8.5.0",
         "eslint-plugin-import": "2.26.0",
         "eslint-plugin-nuxt": "^4.0.0",

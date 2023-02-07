@@ -1,6 +1,9 @@
 <template>
-    <div class="template-page page">
-        <ClientOnly><PcAppHeader /></ClientOnly>
+    <div class="sfw-page page">
+        <ClientOnly>
+            <PcAppShadow />
+            <PcAppHeader />
+        </ClientOnly>
         <div class="content">
             <div class="banner-con">
                 <PcAppBanner
@@ -84,8 +87,11 @@
                     >
                         {{ item }}
                     </button>
-                    <button v-if="pageIndex < totalPage - 3" class="btn">...</button>
+                    <button v-if="pageIndex < totalPage - 3 && totalPage > 5" class="btn">
+                        ...
+                    </button>
                     <button
+                        v-if="totalPage > 5"
                         class="btn"
                         :class="{ 'btn-active': totalPage === pageIndex }"
                         @click="currentPage(totalPage)"
@@ -144,10 +150,15 @@ onMounted(() => {
 });
 
 const currentList = computed(() => {
-    const arr = Array.from({ length: totalPage.value }, (element, index) => index).slice(
-        pageIndex.value > 3 ? pageIndex.value - 3 : pageIndex.value,
-        pageIndex.value + 3,
-    );
+    let arr = [];
+    if (totalPage.value > 5) {
+        arr = Array.from({ length: totalPage.value }, (element, index) => index).slice(
+            pageIndex.value > 3 ? pageIndex.value - 3 : pageIndex.value,
+            pageIndex.value + 3,
+        );
+    } else {
+        arr = Array.from({ length: totalPage.value }, (element, index) => index).map((i) => i + 1);
+    }
     return arr;
 });
 
@@ -167,6 +178,7 @@ const loadData = async () => {
     const result: any = await TemplateApi.getTemplates({
         pageIndex: pageIndex.value,
         pageSize: pageSize.value,
+        searchTag: searchText.value,
     });
     loading.value = false;
     templatesList.value = result?.templates;
@@ -185,6 +197,9 @@ const searchChange = lodash.debounce(async (val: any) => {
         searchTag: searchText.value,
     });
     loading.value = false;
+    total.value = result.total;
+    totalPage.value = Math.ceil(total.value / pageSize.value);
+    pageIndex.value = 1;
     templatesList.value =
         result?.templates && result?.templates.length !== 0 ? result?.templates : [];
 }, 1200);
@@ -250,11 +265,13 @@ const likeTemplate = async (id: number) => {
 .low-image-blur {
     filter: blur(4px);
 }
-.template-page {
+.sfw-page {
     height: 100vh;
-    overflow-y: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 
+    .content {
+        padding: 20px;
+    }
     .list-con {
         min-height: 50vh;
     }

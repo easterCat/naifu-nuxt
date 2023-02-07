@@ -142,6 +142,9 @@ const userLevel = () => {
     overflow-y: hidden;
     overflow-y: scroll;
 
+    .content {
+        padding: 15px;
+    }
     .banner-con {
         display: flex;
         flex-direction: column;

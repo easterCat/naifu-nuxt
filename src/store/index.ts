@@ -22,6 +22,7 @@ export const useIndexStore = defineStore({
 
     getters: {
         nickname: (state) => state.userInfo.nickname,
+        avatar: (state) => state.userInfo.avatar,
         username: (state) =>
             state.userInfo.nickname ? state.userInfo.nickname : state.userInfo.username,
         userId: (state) => state.userInfo.id,
@@ -34,6 +35,10 @@ export const useIndexStore = defineStore({
         favorites: (state) =>
             state.userInfo.favorites && state.userInfo.favorites.length
                 ? state.userInfo.favorites
+                : [],
+        templates: (state) =>
+            state.userInfo.templates && state.userInfo.templates.length
+                ? state.userInfo.templates
                 : [],
     },
 
@@ -70,6 +75,11 @@ export const useIndexStore = defineStore({
                 const { access_token } = result.data;
                 this.access_token = access_token;
                 $store.set('access_token', JSON.stringify(access_token));
+            } else {
+                this.access_token = '';
+                this.refresh_token = '';
+                $store.set('access_token', JSON.stringify(this.access_token));
+                $store.set('refresh_token', JSON.stringify(this.refresh_token));
             }
         },
         removeFavoriteById(id: number) {

@@ -1,6 +1,9 @@
 <template>
     <div class="tags-page page">
-        <ClientOnly><PcAppHeader /></ClientOnly>
+        <ClientOnly>
+            <PcAppShadow />
+            <PcAppHeader />
+        </ClientOnly>
         <div class="content">
             <PcAppBanner placeholder="搜索标签" @search-change="searchChange" />
             <pc-area-title
@@ -105,7 +108,7 @@ const tags = JSON.parse(result);
 const tagsMenus = ref(tags.class);
 const tagsLists = ref(tagsMenus.value[0].data);
 const tagActive: Ref<number> = ref(0);
-const imageVisible: Ref<boolean> = ref(false);
+const imageVisible: Ref<boolean> = ref(true);
 const searchText: Ref<string> = ref('');
 
 watch(imageVisible, (newValue: boolean) => {
@@ -123,7 +126,7 @@ const searchChange = (val: any) => {
 
 const previewURL = (image = '') => {
     const { $viewerApi } = useNuxtApp();
-    const $viewer = $viewerApi({
+    $viewerApi({
         images: [image],
     });
 };
@@ -145,6 +148,9 @@ onMounted(() => {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
+    .content {
+        padding: 20px;
+    }
 }
 
 .type-list .animation-button {

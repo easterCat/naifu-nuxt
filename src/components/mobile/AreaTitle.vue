@@ -17,12 +17,12 @@ defineProps({
 <style lang="scss" scoped>
 .area-title {
     width: 100%;
-    height: 40px;
-    line-height: 40px;
-    font-size: 24px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 20px;
     font-weight: bold;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
     margin-left: 1px;
 }
 </style>

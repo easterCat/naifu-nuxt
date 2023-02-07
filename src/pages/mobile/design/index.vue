@@ -323,6 +323,10 @@ onMounted(() => {
     overflow-y: hidden;
     overflow-y: scroll;
 
+    .content {
+        padding: 15px;
+    }
+
     .header {
         height: 50px;
         background: rgb(37, 46, 65);
@@ -556,7 +560,7 @@ onMounted(() => {
         overflow-y: auto;
         box-shadow: rgba(188, 191, 211, 0.1) 0px 0px 3px 6px;
         box-sizing: border-box;
-        padding: 10px;
+        padding: 15px;
 
         textarea {
             background: transparent;

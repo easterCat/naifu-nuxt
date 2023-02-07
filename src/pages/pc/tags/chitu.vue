@@ -1,6 +1,9 @@
 <template>
     <div class="chitu-tags-page page">
-        <ClientOnly><PcAppHeader /></ClientOnly>
+        <ClientOnly>
+            <PcAppShadow />
+            <PcAppHeader />
+        </ClientOnly>
         <div class="content">
             <PcAppBanner placeholder="搜索标签" @search-change="searchChange" />
             <pc-area-title
@@ -410,6 +413,9 @@ onUnmounted(() => {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
+    .content {
+        padding: 20px;
+    }
 }
 
 .type-list .animation-button {

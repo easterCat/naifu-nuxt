@@ -1,6 +1,6 @@
 <template>
     <div class="eh-con">
-        <pc-area-title title="EH超多标签列表">
+        <mobile-area-title title="EH超多标签列表">
             <template #titleSide>
                 <el-switch
                     v-model="showHentai"
@@ -10,9 +10,9 @@
                     active-text="开启"
                     class="title-side"
                 />
-                <span class="eh-title-side-tip">(31813个标签版本,高h,慎重)</span>
+                <span class="eh-title-side-tip">(31813标签)</span>
             </template>
-        </pc-area-title>
+        </mobile-area-title>
         <div v-if="showHentai" class="flex justify-between m-b-10">
             <el-select v-model="selectValue" class="m-2" placeholder="命名空间" size="large">
                 <el-option

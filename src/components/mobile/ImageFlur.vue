@@ -45,7 +45,7 @@ const setImageFlur = (value: string) => {
 
 <style scoped lang="scss">
 .control-blur-btns {
-    padding: 18px 0px 10px 2px;
+    padding: 10px 0px 10px 2px;
     .btn {
         color: #fff;
     }

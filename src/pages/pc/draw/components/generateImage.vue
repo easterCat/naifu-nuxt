@@ -14,6 +14,19 @@
                 <Icon v-if="loading" class="m-l-6" name="line-md:loading-twotone-loop"></Icon>
                 <Icon v-else class="m-l-6" name="entypo:brush"></Icon>
             </button>
+            <button
+                v-if="gImage && gImage.length > 0"
+                class="btn btn-sm m-r-10"
+                @click="publishTemplate"
+            >
+                {{ publishLoading ? '发布中' : '发布' }}
+                <Icon
+                    v-if="publishLoading"
+                    class="m-l-6"
+                    name="line-md:loading-twotone-loop"
+                ></Icon>
+                <Icon v-else class="m-l-6" name="ic:baseline-file-upload"></Icon>
+            </button>
         </div>
         <el-row :gutter="20">
             <el-col :xs="24" :sm="24" :md="12" :lg="8" :xl="8">
@@ -183,14 +196,15 @@
 import { onMounted, Ref } from 'vue';
 import dayjs from 'dayjs';
 import { useSettingStore } from '@/store/setting';
-import { warnNotification } from '@/utils/notification';
+import { warnNotification, notification } from '@/utils/notification';
+import { useIndexStore } from '~~/src/store';
 
 interface HistoryItem {
     prompt?: string | undefined;
     time?: string | undefined;
 }
 const settingStore = useSettingStore();
-const { NovalApi } = useApi();
+const { NovalApi, TemplateApi, CommonApi } = useApi();
 const { $store } = useNuxtApp();
 const { copy } = useCopy();
 const { shop, setShop } = useShop();
@@ -203,6 +217,7 @@ const promptHistory: Ref<HistoryItem[]> = ref<HistoryItem[]>([]);
 const promptHistoryLength: Ref<number> = ref(0);
 const gImage: Ref<any[] | undefined> = ref([]);
 const loading: Ref<boolean> = ref(false);
+const publishLoading: Ref<boolean> = ref(false);
 const generateImageOptions = ref([
     {
         label: '图片大小 512*768',
@@ -473,9 +488,41 @@ const removeAllHistory = () => {
 
 const previewURL = (image = '') => {
     const { $viewerApi } = useNuxtApp();
-    const $viewer = $viewerApi({
+    $viewerApi({
         images: [image],
     });
+};
+
+const publishTemplate = async () => {
+    if (publishLoading.value) return;
+    publishLoading.value = true;
+    // 上传当前生成的图片
+    try {
+        const uploads = await CommonApi.uploadImages({
+            files: gImage.value?.map((i) => i.replace('data:image/png;base64,', '')).join(','),
+        });
+        const images = uploads.data.join(',');
+
+        // 发布当前模版
+        const result = await TemplateApi.createPersonalTemplate({
+            prompt: textArea.value,
+            n_prompt: uc.value,
+            size: generateImageSize.value,
+            scale: 12,
+            sampler: generateImageSampler.value,
+            step: 28,
+            images,
+        });
+        publishLoading.value = false;
+        if (result && result.code === 200) {
+            return notification('创建成功');
+        } else {
+            publishLoading.value = false;
+        }
+    } catch (error) {
+        console.error(error);
+        publishLoading.value = false;
+    }
 };
 </script>
 

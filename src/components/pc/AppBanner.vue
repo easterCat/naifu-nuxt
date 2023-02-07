@@ -16,7 +16,7 @@
                     :prefix-icon="Search"
                     clearable
                 />
-                <button class="btn btn-sm btn-accent">Search</button>
+                <button class="btn btn-sm btn-accent" @click="search">Search</button>
             </div>
         </PcAppAnimate>
         <PcAppAnimate>
@@ -41,6 +41,10 @@ const input = ref('');
 watch(input, (newInput) => {
     emit('searchChange', newInput);
 });
+
+const search = () => {
+    emit('searchChange', input.value);
+};
 </script>
 
 <style lang="scss" scoped>

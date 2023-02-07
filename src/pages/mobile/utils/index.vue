@@ -4,7 +4,7 @@
             <ClientOnly><MobileAppHeader /></ClientOnly>
             <ClientOnly>
                 <div v-animate-css="{ direction: 'modifySlideInUp' }" class="content">
-                    <pc-area-title title="按类别浏览"></pc-area-title>
+                    <mobile-area-title title="按类别浏览"></mobile-area-title>
                     <div class="menu-list">
                         <div
                             v-for="(menu, mIndex) in menuList"
@@ -17,7 +17,7 @@
                             <span>{{ menu?.name }}</span>
                         </div>
                     </div>
-                    <pc-area-title title="当前工具"></pc-area-title>
+                    <mobile-area-title title="当前工具"></mobile-area-title>
                     <component
                         :is="menuView"
                         v-animate-css="{ direction: 'modifySlideInUp', delay: 100 }"
@@ -79,6 +79,7 @@ const setPreview = (v: any) => {
     .content {
         width: 100%;
         min-height: calc(100vh - 72px);
+        padding: 15px;
         margin: 0 auto;
     }
 

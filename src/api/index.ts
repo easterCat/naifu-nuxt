@@ -9,6 +9,7 @@ import TemplateApi from '~~/src/api/template';
 import AuthApi from '~~/src/api/auth';
 import NovalApi from '~~/src/api/noval';
 import DanbooruApi from '~~/src/api/danbooru';
+import CommonApi from '~~/src/api/common';
 
 export default {
     EhtagsApi,
@@ -22,4 +23,5 @@ export default {
     AuthApi,
     NovalApi,
     DanbooruApi,
+    CommonApi,
 };

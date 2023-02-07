@@ -1,70 +1,66 @@
 <template>
     <div class="water-fall">
         <div ref="wrapper" class="wrapper">
-            <div class="image-con">
-                <ul class="image-list">
-                    <li
-                        v-for="(image, iIndex) in waterFallOption.images"
-                        :key="image?.id"
-                        ref="domRefs"
-                        class="image-item"
-                        :style="`width:${colWidth}px;height:${image._height}px;top:${image._top}px;left:${image._left}px;`"
+            <ul class="image-list">
+                <li
+                    v-for="(image, iIndex) in waterFallOption.images"
+                    :key="image?.id"
+                    ref="domRefs"
+                    class="image-item"
+                    :style="`width:${colWidth}px;height:${image._height}px;top:${image._top}px;left:${image._left}px;`"
+                >
+                    <div
+                        class="image-con"
+                        @mouseenter="hoverImageCon(iIndex)"
+                        @mouseleave="leaveImageCon"
                     >
-                        <div
-                            class="image-con"
-                            @mouseenter="hoverImageCon(iIndex)"
-                            @mouseleave="leaveImageCon"
-                        >
-                            <img
-                                :src="
-                                    image?.min_imgbb_url
-                                        ? image?.min_imgbb_url
-                                        : image?.minify_preview
-                                "
-                                :alt="image?.prompt"
-                                :class="{
-                                    'high-image-blur': flur === 'high',
-                                    'low-image-blur': flur === 'low',
-                                }"
-                            />
-                            <div v-if="hoverIndex === iIndex" class="item-wrapper">
-                                <ClientOnly>
-                                    <div
-                                        v-animate-css="{ direction: 'modifySlideInDown' }"
-                                        class="icon-con"
-                                    >
-                                        <span v-if="hoverIndex === iIndex">
-                                            <i-ep-search></i-ep-search>
-                                        </span>
-                                        <span>
-                                            <i-ep-star
-                                                :class="{
-                                                    liked: favoriteIds?.includes(image?.id + ''),
-                                                }"
-                                                @click="favorite(image?.id, iIndex)"
-                                            ></i-ep-star>
-                                            <i-ep-more @click="preview(image)"></i-ep-more>
-                                        </span>
-                                    </div>
-                                </ClientOnly>
-                                <ClientOnly>
-                                    <div
-                                        v-animate-css="{ direction: 'modifySlideInUp' }"
-                                        class="text-con"
-                                    >
-                                        <p>{{ image?.name }}</p>
-                                        <p>{{ image?.prompt }}</p>
-                                    </div>
-                                </ClientOnly>
-                            </div>
+                        <img
+                            :src="
+                                image?.min_imgbb_url ? image?.min_imgbb_url : image?.minify_preview
+                            "
+                            :alt="image?.prompt"
+                            :class="{
+                                'high-image-blur': flur === 'high',
+                                'low-image-blur': flur === 'low',
+                            }"
+                        />
+                        <div v-if="hoverIndex === iIndex" class="item-wrapper">
+                            <ClientOnly>
+                                <div
+                                    v-animate-css="{ direction: 'modifySlideInDown' }"
+                                    class="icon-con"
+                                >
+                                    <span v-if="hoverIndex === iIndex">
+                                        <i-ep-search></i-ep-search>
+                                    </span>
+                                    <span>
+                                        <i-ep-star
+                                            :class="{
+                                                liked: favoriteIds?.includes(image?.id + ''),
+                                            }"
+                                            @click="favorite(image?.id, iIndex)"
+                                        ></i-ep-star>
+                                        <i-ep-more @click="preview(image)"></i-ep-more>
+                                    </span>
+                                </div>
+                            </ClientOnly>
+                            <ClientOnly>
+                                <div
+                                    v-animate-css="{ direction: 'modifySlideInUp' }"
+                                    class="text-con"
+                                >
+                                    <p>{{ image?.name }}</p>
+                                    <p>{{ image?.prompt }}</p>
+                                </div>
+                            </ClientOnly>
                         </div>
-                    </li>
-                </ul>
-            </div>
+                    </div>
+                </li>
+            </ul>
         </div>
-        <div v-show="loading" class="spinner">
-            <div class="dot1"></div>
-            <div class="dot2"></div>
+        <div class="spinner">
+            <div v-show="loading" class="dot1"></div>
+            <div v-show="loading" class="dot2"></div>
         </div>
     </div>
 </template>
@@ -119,7 +115,7 @@ const { $store }: any = useNuxtApp();
 const route = useRoute();
 
 const props = defineProps(['datas', 'flur', 'loading', 'searchText', 'favoriteIds']);
-const emits = defineEmits(['load', 'preview', 'favorite']);
+const emits = defineEmits(['load', 'preview', 'favorite', 'loaded']);
 
 const waterFallOption: WaterFallOption = reactive({
     images: [],
@@ -187,7 +183,7 @@ const favorite = async (id: number, index: number) => {
 const renderImage = () => {
     if (wrapper.value) {
         wrapper.value.style.height = `${
-            Math.max.apply(null, waterFallOption.colsHeightArr) + 340
+            Math.max.apply(null, waterFallOption.colsHeightArr) + 280
         }px`;
     }
 
@@ -207,12 +203,13 @@ const renderImage = () => {
             }, 300);
         } else {
             imgEl.onload = () => {
-                console.log('imgEl.complete :>> ', imgEl.complete);
                 imgEl.style.opacity = 1;
                 imgEl.style.transform = 'scale(1)';
             };
         }
     }
+    // 等位置计算完毕,等待图片动画过程时结束loading
+    emits('loaded');
     waterFallOption.beginIndex = imgRefs.length;
 };
 
@@ -220,7 +217,7 @@ const renderImage = () => {
 const resizeImage = () => {
     if (wrapper.value) {
         wrapper.value.style.height = `${
-            Math.max.apply(null, waterFallOption.colsHeightArr) + 340
+            Math.max.apply(null, waterFallOption.colsHeightArr) + 280
         }px`;
     }
 
@@ -247,7 +244,6 @@ const waterFall = () => {
             left = i * colWidth.value + (i % waterFallOption.columnNumber);
         } else {
             const minHeight = Math.min.apply(null, waterFallOption.colsHeightArr);
-            console.log('minHeight :>> ', minHeight);
             const minIndex = waterFallOption.colsHeightArr.indexOf(minHeight);
             top = minHeight;
             left = minIndex * colWidth.value;
@@ -416,6 +412,40 @@ onUnmounted(() => {
 .low-image-blur {
     filter: blur(4px);
 }
+
+.water-fall {
+    min-height: 300px;
+    padding-bottom: 120px;
+
+    .spinner {
+        margin: 0 auto;
+        width: 80px;
+        height: 80px;
+        position: relative;
+        text-align: center;
+        animation: rotate 2s infinite linear;
+    }
+
+    .dot1,
+    .dot2 {
+        width: 60%;
+        height: 60%;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        background-color: hsl(var(--p) / 1);
+        border-radius: 100%;
+        animation: bounce 2s infinite ease-in-out;
+    }
+
+    .dot2 {
+        top: auto;
+        bottom: 0px;
+        -webkit-animation-delay: -1s;
+        animation-delay: -1s;
+    }
+}
+
 .image-list {
     display: grid;
     position: relative;
@@ -538,34 +568,5 @@ onUnmounted(() => {
             filter: brightness(1.8);
         }
     }
-}
-
-.spinner {
-    margin: 0 auto;
-    width: 80px;
-    height: 80px;
-    position: relative;
-    top: -120px;
-    text-align: center;
-    animation: rotate 2s infinite linear;
-}
-
-.dot1,
-.dot2 {
-    width: 60%;
-    height: 60%;
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    background-color: hsl(var(--p) / 1);
-    border-radius: 100%;
-    animation: bounce 2s infinite ease-in-out;
-}
-
-.dot2 {
-    top: auto;
-    bottom: 0px;
-    -webkit-animation-delay: -1s;
-    animation-delay: -1s;
 }
 </style>

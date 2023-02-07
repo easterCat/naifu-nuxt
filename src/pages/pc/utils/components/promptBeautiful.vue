@@ -57,7 +57,7 @@
                     当前tags替换prompt
                 </button>
             </div>
-            <template v-for="(tag, tIndex) in promptList" :key="tIndex">
+            <template v-for="(tag, tIndex) in promptList.filter((i) => !!i)" :key="tIndex">
                 <button class="btn btn-sm btn-secondary m-r-10 m-b-10" @close="removeTag(tIndex)">
                     {{ tag }}
                 </button>

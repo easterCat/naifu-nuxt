@@ -1,6 +1,7 @@
 <template>
     <ClientOnly>
         <div class="profile-page page">
+            <PcAppShadow />
             <PcAppHeader />
             <div class="content">
                 <div class="banner-con">
@@ -12,7 +13,11 @@
                     <div class="avatar-con">
                         <div class="avatar">
                             <div class="w-32 rounded-full">
-                                <img src="https://placeimg.com/192/192/people" />
+                                <img
+                                    :src="
+                                        indexStore.avatar || 'https://placeimg.com/192/192/people'
+                                    "
+                                />
                             </div>
                         </div>
                     </div>
@@ -60,14 +65,30 @@
                 </div>
                 <div class="tabs-con">
                     <div class="tabs">
-                        <a class="tab tab-lg tab-bordered tab-active m-r-10">收藏模版</a>
-                        <a class="tab tab-lg tab-bordered">个人模版</a>
+                        <a
+                            class="tab tab-lg tab-bordered m-r-10"
+                            :class="{ 'tab-active': tabActive === 1 }"
+                            @click="changeTabActive(1)"
+                        >
+                            收藏模版
+                        </a>
+                        <a
+                            class="tab tab-lg tab-bordered"
+                            :class="{ 'tab-active': tabActive === 2 }"
+                            @click="changeTabActive(2)"
+                        >
+                            个人模版
+                        </a>
                     </div>
                 </div>
                 <div class="collect-con">
-                    <el-row v-if="indexStore?.favorites" class="list-con" :gutter="20">
+                    <el-row
+                        v-if="indexStore?.favorites || indexStore?.templates"
+                        class="list-con"
+                        :gutter="20"
+                    >
                         <el-col
-                            v-for="(tem, tIndex) in indexStore?.favorites"
+                            v-for="(tem, tIndex) in showList"
                             :key="tIndex"
                             v-animate-css="{
                                 direction: 'modifySlideInUp',
@@ -79,7 +100,7 @@
                             :lg="4"
                             :xl="4"
                         >
-                            <div class="shadow-xl card card-compact bg-base-100 m-b-20">
+                            <div class="shadow-xl card card-compact glass bg-base-100 m-b-20">
                                 <figure>
                                     <nuxt-img
                                         class="image"
@@ -89,6 +110,7 @@
                                                 : tem?.minify_preview
                                         "
                                         loading="lazy"
+                                        @click="previewURL(tem?.images)"
                                     />
                                 </figure>
                                 <div class="card-body">
@@ -96,6 +118,7 @@
                                     <p>{{ tem?.author }}</p>
                                     <div class="justify-end card-actions">
                                         <button
+                                            v-if="tabActive === 1"
                                             class="btn btn-sm btn-secondary"
                                             @click="favoriteTem(tem?.id)"
                                         >
@@ -139,6 +162,8 @@ let indexStore: any = null;
 
 const showPreview = ref(false);
 const currentTemplate: Ref<any | null> = ref(null);
+const tabActive = ref(1); // 1 or 2
+const showList: any = ref([]);
 
 const joinDay = () => {
     const minus = dayjs(dayjs().format('YYYY-MM-DD')).diff(indexStore?.userInfo.create_time, 'day');
@@ -177,22 +202,42 @@ const favoriteTem = async (id: number) => {
 };
 
 const cardClick = (tem: any) => {
-    currentTemplate.value = { ...tem };
+    currentTemplate.value = { ...tem, preview: tem?.imgbb_url ? tem?.imgbb_url : tem?.preview };
     showPreview.value = true;
+};
+
+const changeTabActive = (index: number) => {
+    tabActive.value = index;
+    if (index === 1) {
+        showList.value = indexStore?.favorites;
+    } else {
+        showList.value = indexStore?.templates;
+    }
+};
+
+const previewURL = (images = '') => {
+    if (!images) return;
+    const { $viewerApi } = useNuxtApp();
+    $viewerApi({
+        images: images.split(','),
+    });
 };
 
 onMounted(() => {
     indexStore = useIndexStore();
     initUserInfo();
+    showList.value = indexStore?.favorites;
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .profile-page {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
-
+    .content {
+        padding: 20px;
+    }
     .image {
         width: 100%;
         height: 320px;
@@ -272,6 +317,12 @@ onMounted(() => {
 
     .collect-con {
         margin-top: 20px;
+
+        .card-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 }
 </style>

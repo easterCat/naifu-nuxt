@@ -1,6 +1,9 @@
 <template>
-    <div class="template-page page">
-        <ClientOnly><PcAppHeader /></ClientOnly>
+    <div class="nsfw-page page">
+        <ClientOnly>
+            <PcAppShadow />
+            <PcAppHeader />
+        </ClientOnly>
         <div class="content">
             <div class="banner-con">
                 <PcAppBanner
@@ -60,7 +63,10 @@
                                     <button class="btn btn-accent btn-sm" @click="cardClick(tem)">
                                         详情
                                     </button>
-                                    <button class="btn btn-primary btn-sm" @click="exportPromptToShop(tem)">
+                                    <button
+                                        class="btn btn-primary btn-sm"
+                                        @click="exportPromptToShop(tem)"
+                                    >
                                         购物车
                                     </button>
                                 </div>
@@ -83,8 +89,11 @@
                     >
                         {{ item }}
                     </button>
-                    <button v-if="pageIndex < totalPage - 3" class="btn">...</button>
+                    <button v-if="pageIndex < totalPage - 3 && totalPage > 5" class="btn">
+                        ...
+                    </button>
                     <button
+                        v-if="totalPage > 5"
                         class="btn"
                         :class="{ 'btn-active': totalPage === pageIndex }"
                         @click="currentPage(totalPage)"
@@ -140,10 +149,15 @@ onMounted(() => {
 });
 
 const currentList = computed(() => {
-    const arr = Array.from({ length: totalPage.value }, (element, index) => index).slice(
-        pageIndex.value > 3 ? pageIndex.value - 3 : pageIndex.value,
-        pageIndex.value + 3,
-    );
+    let arr = [];
+    if (totalPage.value > 5) {
+        arr = Array.from({ length: totalPage.value }, (element, index) => index).slice(
+            pageIndex.value > 3 ? pageIndex.value - 3 : pageIndex.value,
+            pageIndex.value + 3,
+        );
+    } else {
+        arr = Array.from({ length: totalPage.value }, (element, index) => index).map((i) => i + 1);
+    }
     return arr;
 });
 
@@ -169,8 +183,7 @@ const tagsAddComma = (value: string) => {
 };
 
 const searchChange = lodash.debounce(async (val: any) => {
-    if (val === searchText.value) return;
-
+    // if (val === searchText.value) return;
     searchText.value = val;
     pageIndex.value = 1;
     loadData();
@@ -259,10 +272,13 @@ const dataFromChange = (e: any) => {
 .low-image-blur {
     filter: blur(4px);
 }
-.template-page {
+.nsfw-page {
     height: 100vh;
-    overflow-y: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
+
+    .content {
+        padding: 20px;
+    }
 
     .list-con {
         min-height: 50vh;

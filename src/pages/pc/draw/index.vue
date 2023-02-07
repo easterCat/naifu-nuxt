@@ -1,6 +1,9 @@
 <template>
     <div class="draw-page page">
-        <ClientOnly><PcAppHeader /></ClientOnly>
+        <ClientOnly>
+            <PcAppShadow />
+            <PcAppHeader />
+        </ClientOnly>
         <ClientOnly>
             <div v-animate-css="{ direction: 'modifySlideInUp' }" class="content">
                 <PcAreaTitle title="生成图片"></PcAreaTitle>
@@ -30,6 +33,8 @@ const menuList = ref(utilMenus);
     .content {
         max-width: 1280px;
         margin: 0 auto;
+
+        padding: 20px;
     }
 }
 .menu-list {

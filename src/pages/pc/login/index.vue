@@ -173,7 +173,7 @@ const login = async () => {
         align-items: center;
         width: 100%;
         height: 100vh;
-
+        padding: 20px;
         img {
             position: absolute;
             top: 0;

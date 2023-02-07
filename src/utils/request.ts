@@ -1,6 +1,7 @@
 import { uuid } from 'vue-uuid';
 import { useIndexStore } from '../store';
 import { errorMessage } from '@/utils/message';
+import { isMobile } from '@/utils/index';
 
 interface resultJson {
     code: number;
@@ -13,6 +14,7 @@ const fetch = (url: string, options?: any, from?: string): Promise<any> => {
     const api = config.public.FLASK_BASE_API;
     const dataFrom = config.public.API_DATA_FROM;
     const indexStore = useIndexStore();
+    const router = useRouter();
 
     let reqUrl = '';
     if (dataFrom === 'github' || from === 'github') {
@@ -39,10 +41,23 @@ const fetch = (url: string, options?: any, from?: string): Promise<any> => {
             }
             const result: resultJson = await $fetch(reqUrl, op);
             if (result) {
-                if (result?.code === 20001) {
+                if (reqUrl.includes('refresh') && result?.code === 20001) {
+                    indexStore.clearToken();
+                    if (isMobile()) {
+                        router.replace('/mobile/login');
+                    } else {
+                        router.replace('/pc/login');
+                    }
+                } else if (result?.code === 20001) {
                     await indexStore.refresh();
                 } else if (result?.code === 20002 || result?.code === 20003) {
                     errorMessage(result?.msg);
+
+                    if (isMobile()) {
+                        router.replace('/mobile/login');
+                    } else {
+                        router.replace('/pc/login');
+                    }
                 } else if (result?.code === 500) {
                     errorMessage(result?.msg);
                 } else {

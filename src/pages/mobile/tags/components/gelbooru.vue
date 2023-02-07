@@ -1,10 +1,10 @@
 <template>
     <div class="eh-con">
-        <pc-area-title title="Gelbooru标签列表">
+        <mobile-area-title title="Gelbooru标签列表">
             <template #titleSide>
                 <span class="eh-title-side-tip">(分类不好用,用搜索)</span>
             </template>
-        </pc-area-title>
+        </mobile-area-title>
         <div class="flex justify-between m-b-10">
             <el-select v-model="selectValue" placeholder="类别" size="large">
                 <el-option

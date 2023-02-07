@@ -3,10 +3,10 @@
         <div class="banner-image">
             <img src="@/assets/imgs/banner/sYw7uX71Xe.jpeg" alt="" />
         </div>
-        <MobileAppAnimate>
+        <PcAppAnimate>
             <div class="banner-message">完全基于Github Page的静态资源网站,记录使用</div>
-        </MobileAppAnimate>
-        <MobileAppAnimate>
+        </PcAppAnimate>
+        <PcAppAnimate>
             <div class="banner-search">
                 <el-input
                     v-model="input"
@@ -16,11 +16,12 @@
                     :prefix-icon="Search"
                     clearable
                 />
+                <button class="btn btn-sm btn-accent">Search</button>
             </div>
-        </MobileAppAnimate>
-        <MobileAppAnimate>
+        </PcAppAnimate>
+        <PcAppAnimate>
             <div class="banner-tips">基于nuxt3,vue3,element plus</div>
-        </MobileAppAnimate>
+        </PcAppAnimate>
     </div>
 </template>
 
@@ -83,9 +84,17 @@ watch(input, (newInput) => {
     }
 
     .banner-search {
+        position: relative;
         max-width: 300px;
         width: 100%;
         margin: 4px;
+
+        button {
+            position: absolute;
+            right: 4px;
+            top: 4px;
+            border-radius: 30px;
+        }
     }
 
     .input-style {
@@ -101,5 +110,9 @@ watch(input, (newInput) => {
 :deep(.el-input__wrapper) {
     border-radius: 30px;
     background: rgba(255, 255, 255, 0.7);
+}
+
+:deep(.el-input__suffix) {
+    transform: translateX(-64px);
 }
 </style>

@@ -34,8 +34,7 @@ const menuList = ref(utilMenus);
     overflow-y: scroll;
 
     .content {
-        max-width: 1280px;
-        margin: 0 auto;
+        padding: 15px;
     }
 }
 .menu-list {

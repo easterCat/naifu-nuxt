@@ -483,7 +483,7 @@ const removeAllHistory = () => {
 }
 
 .history-item {
-    padding: 10px;
+    padding: 15px;
     --tw-bg-opacity: 0.15;
     background-color: hsl(var(--p) / var(--tw-bg-opacity));
     box-shadow: hsl(var(--p) / 0.05) 0px 7px 29px 0px;

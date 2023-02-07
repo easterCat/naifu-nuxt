@@ -1,6 +1,9 @@
 <template>
     <div class="utils-page page">
-        <ClientOnly><PcAppHeader /></ClientOnly>
+        <ClientOnly>
+            <PcAppShadow />
+            <PcAppHeader />
+        </ClientOnly>
         <ClientOnly>
             <div v-animate-css="{ direction: 'modifySlideInUp' }" class="content">
                 <pc-area-title title="按类别浏览"></pc-area-title>
@@ -76,6 +79,7 @@ const setPreview = (v: any) => {
         width: 1280px;
         min-height: calc(100vh - 72px);
         margin: 0 auto;
+        padding: 20px;
     }
 
     .menu-list {

@@ -212,8 +212,12 @@ const nextPage = () => {
     overflow-y: hidden;
     overflow-y: scroll;
 
+    .content {
+        padding: 15px;
+    }
+
     .control-blur-btns {
-        padding: 18px 0px 10px 2px;
+        padding: 10px 0;
         .btn {
             color: #fff;
         }

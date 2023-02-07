@@ -1,6 +1,9 @@
 <template>
     <div class="home-page page">
-        <ClientOnly><PcAppHeader /></ClientOnly>
+        <ClientOnly>
+            <PcAppShadow />
+            <PcAppHeader />
+        </ClientOnly>
         <ClientOnly>
             <div
                 v-animate-css="{
@@ -15,16 +18,19 @@
                         @search-change="searchChange"
                     ></PcAppBanner>
                 </div>
-                <PcImageFlur @get-image-flur="getImageFlur"></PcImageFlur>
+                <div class="btn-con">
+                    <PcImageFlur @get-image-flur="getImageFlur"></PcImageFlur>
+                </div>
                 <common-water-fall
+                    :loading="loadingStatus"
                     :datas="imageList"
                     :flur="imageFlur"
-                    :loading="loadingStatus"
                     :search-text="searchText"
                     :favorite-ids="indexStore.favoriteIds"
                     @load="scrollLoad"
                     @preview="showDetail"
                     @favorite="likeTemplate"
+                    @loaded="loadingFinish"
                 ></common-water-fall>
             </div>
         </ClientOnly>
@@ -40,6 +46,7 @@
 import { ref, Ref } from 'vue';
 import lodash from 'lodash';
 import { useIndexStore } from '~~/src/store/index';
+import { warnNotification } from '@/utils/notification';
 
 interface ImageItem {
     name: string;
@@ -90,6 +97,7 @@ const getImageFlur = (value: any) => {
 const initList = async () => {
     TemplateApi.setIp();
     const initPageIndex = Math.ceil(Math.random() * 100);
+    loadingStatus.value = true;
     const result = await TemplateApi.getTemplates({
         pageIndex: initPageIndex ? initPageIndex : 1,
         pageSize: 50,
@@ -112,7 +120,6 @@ const searchChange = lodash.debounce(async (val: any) => {
         pageSize: pageSize.value,
         searchTag: searchText.value,
     });
-    loadingStatus.value = false;
     imageList.value = result?.templates && result?.templates.length !== 0 ? result?.templates : [];
 }, 1200);
 
@@ -134,9 +141,17 @@ const scrollLoad = async (page: any) => {
         pageSize: page.pageSize,
         searchTag: searchText.value,
     });
+    if (result?.templates && result?.templates.length > 0) {
+        const lists = result?.templates ? result?.templates : [];
+        imageList.value = imageList.value.concat([...lists]);
+    } else {
+        loadingStatus.value = false;
+        return warnNotification('没有更多数据!');
+    }
+};
+
+const loadingFinish = () => {
     loadingStatus.value = false;
-    const lists = result?.templates ? result?.templates : [];
-    imageList.value = imageList.value.concat([...lists]);
 };
 
 onMounted(() => {
@@ -155,17 +170,12 @@ onMounted(() => {
         padding: 20px 12px 20px 12px;
     }
     .banner-con {
-        padding-bottom: 8px;
         padding-left: 8px;
         padding-right: 8px;
     }
 
-    .control-blur-btns {
-        padding: 10px 8px 10px 10px;
-
-        .btn {
-            color: #fff;
-        }
+    .btn-con {
+        padding-left: 8px;
     }
 
     .btn-s-30 {

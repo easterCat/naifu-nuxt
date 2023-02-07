@@ -1,60 +1,188 @@
 <template>
     <div class="chitu-tags-page page">
-        <ClientOnly><MobileAppHeader /></ClientOnly>
-        <div class="content">
-            <MobileAppBanner placeholder="搜索标签" @search-change="searchChange" />
-            <pc-area-title
-                v-animate-css="{
-                    direction: 'modifySlideInUp',
-                }"
-                title="标签类别"
-            ></pc-area-title>
-            <div class="type-list">
-                <ClientOnly>
-                    <PcAnimationButton
-                        v-for="(m, mIndex) in tagsMenus"
-                        :key="mIndex"
-                        v-animate-css="{
-                            direction: 'modifySlideInUp',
-                            delay: mIndex * 30,
-                        }"
-                        :index="mIndex + ''"
-                        :button-style="1"
-                        button-size="larger"
-                        :class="[mIndex === tagActive ? 'btn-accent' : 'btn-primary-30']"
-                        :button-text="m?.name"
-                        @submit="menuItemClick(mIndex)"
-                    ></PcAnimationButton>
-                </ClientOnly>
-            </div>
-            <pc-area-title
-                v-animate-css="{
-                    direction: 'modifySlideInUp',
-                }"
-                title="标签列表"
-            >
-                <template #titleSide>
-                    <el-switch
-                        v-model="showImage"
-                        size="large"
-                        inline-prompt
-                        inactive-text="隐藏Image"
-                        active-text="开启Image"
-                        class="title-side"
-                    />
-                </template>
-            </pc-area-title>
-
-            <template v-if="index">
-                <div class="tag-list">
+        <NuxtLayout name="mobile">
+            <ClientOnly><MobileAppHeader /></ClientOnly>
+            <div class="content">
+                <MobileAppBanner placeholder="搜索标签" @search-change="searchChange" />
+                <mobile-area-title
+                    v-animate-css="{
+                        direction: 'modifySlideInUp',
+                    }"
+                    title="标签类别"
+                ></mobile-area-title>
+                <div class="type-list">
                     <ClientOnly>
+                        <PcAnimationButton
+                            v-for="(m, mIndex) in tagsMenus"
+                            :key="mIndex"
+                            v-animate-css="{
+                                direction: 'modifySlideInUp',
+                                delay: mIndex * 30,
+                            }"
+                            :index="mIndex + ''"
+                            :button-style="1"
+                            button-size="larger"
+                            :class="[mIndex === tagActive ? 'btn-accent' : 'btn-primary-30']"
+                            :button-text="m?.name"
+                            @submit="menuItemClick(mIndex)"
+                        ></PcAnimationButton>
+                    </ClientOnly>
+                </div>
+                <mobile-area-title
+                    v-animate-css="{
+                        direction: 'modifySlideInUp',
+                    }"
+                    title="标签列表"
+                >
+                    <template #titleSide>
+                        <el-switch
+                            v-model="showImage"
+                            size="large"
+                            inline-prompt
+                            inactive-text="隐藏Image"
+                            active-text="开启Image"
+                            class="title-side"
+                        />
+                    </template>
+                </mobile-area-title>
+
+                <template v-if="index">
+                    <div class="tag-list">
+                        <ClientOnly>
+                            <div
+                                v-for="(o, oIndex) in tagsLists"
+                                :key="oIndex"
+                                v-animate-css="{
+                                    direction: 'modifySlideInUp',
+                                    delay: oIndex * 30,
+                                }"
+                                class="tag-item-img ll-media bg-base-100"
+                                :data-index="oIndex"
+                            >
+                                <div
+                                    v-if="showImage && tagActive !== 5 && tagActive !== 6"
+                                    class="image-con"
+                                >
+                                    <nuxt-img
+                                        v-if="o?.min_imgbb_url"
+                                        :src="o?.min_imgbb_url ?? ''"
+                                        :placeholder="[100, 50, 10]"
+                                        loading="lazy"
+                                        @click="preview(o)"
+                                    />
+                                </div>
+                                <div class="text-con">
+                                    <el-tooltip
+                                        class="box-item"
+                                        effect="dark"
+                                        :content="o?.promptEN"
+                                        placement="top"
+                                    >
+                                        <p v-if="o?.title" class="en">
+                                            {{
+                                                o?.title.length > 24
+                                                    ? o?.title.slice(0, 24) + '...'
+                                                    : o?.title
+                                            }}
+                                        </p>
+                                        <p v-else class="en">
+                                            {{
+                                                o?.promptEN.length > 24
+                                                    ? o?.promptEN.slice(0, 24) + '...'
+                                                    : o?.promptEN
+                                            }}
+                                        </p>
+                                    </el-tooltip>
+                                </div>
+                                <div class="button-con">
+                                    <button
+                                        class="btn btn-sm btn-circle btn-accent m-r-10"
+                                        @click="addShop(o?.promptEN)"
+                                    >
+                                        <i-ep-shopping-trolley></i-ep-shopping-trolley>
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-circle btn-secondary"
+                                        @click="copy(o?.promptEN)"
+                                    >
+                                        <i-ep-document-copy></i-ep-document-copy>
+                                    </button>
+                                </div>
+                            </div>
+                        </ClientOnly>
+                    </div>
+                </template>
+                <template v-if="tagActive">
+                    <div class="tag-list">
+                        <ClientOnly>
+                            <div
+                                v-for="(o, oIndex) in tagsLists"
+                                :key="oIndex"
+                                v-animate-css="{
+                                    direction: 'modifySlideInUp',
+                                    delay: oIndex * 30,
+                                }"
+                                class="tag-item-img ll-media bg-base-100"
+                                :data-index="oIndex"
+                            >
+                                <div
+                                    v-if="showImage && tagActive !== 5 && tagActive !== 6"
+                                    class="image-con"
+                                >
+                                    <nuxt-img
+                                        v-if="o?.fileUrl"
+                                        :src="o?.fileUrl"
+                                        :placeholder="[100, 50, 10]"
+                                        loading="lazy"
+                                        @click="preview(o)"
+                                    />
+                                </div>
+                                <div class="text-con">
+                                    <el-tooltip
+                                        class="box-item"
+                                        effect="dark"
+                                        :content="o?.promptEN"
+                                        placement="top"
+                                    >
+                                        <p v-if="o?.title" class="en">
+                                            {{
+                                                o?.title.length > 24
+                                                    ? o?.title.slice(0, 24) + '...'
+                                                    : o?.title
+                                            }}
+                                        </p>
+                                        <p v-else class="en">
+                                            {{
+                                                o?.promptEN.length > 24
+                                                    ? o?.promptEN.slice(0, 24) + '...'
+                                                    : o?.promptEN
+                                            }}
+                                        </p>
+                                    </el-tooltip>
+                                </div>
+                                <div class="button-con">
+                                    <button
+                                        class="btn btn-sm btn-circle btn-accent m-r-10"
+                                        @click="addShop(o?.promptEN)"
+                                    >
+                                        <i-ep-shopping-trolley></i-ep-shopping-trolley>
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-circle btn-secondary"
+                                        @click="copy(o?.promptEN)"
+                                    >
+                                        <i-ep-document-copy></i-ep-document-copy>
+                                    </button>
+                                </div>
+                            </div>
+                        </ClientOnly>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="tag-list">
                         <div
                             v-for="(o, oIndex) in tagsLists"
                             :key="oIndex"
-                            v-animate-css="{
-                                direction: 'modifySlideInUp',
-                                delay: oIndex * 30,
-                            }"
                             class="tag-item-img ll-media bg-base-100"
                             :data-index="oIndex"
                         >
@@ -74,7 +202,7 @@
                                 <el-tooltip
                                     class="box-item"
                                     effect="dark"
-                                    :content="o?.promptEN"
+                                    :content="o?.prompt"
                                     placement="top"
                                 >
                                     <p v-if="o?.title" class="en">
@@ -86,9 +214,9 @@
                                     </p>
                                     <p v-else class="en">
                                         {{
-                                            o?.promptEN.length > 24
-                                                ? o?.promptEN.slice(0, 24) + '...'
-                                                : o?.promptEN
+                                            o?.prompt.length > 24
+                                                ? o?.prompt.slice(0, 24) + '...'
+                                                : o?.prompt
                                         }}
                                     </p>
                                 </el-tooltip>
@@ -96,158 +224,36 @@
                             <div class="button-con">
                                 <button
                                     class="btn btn-sm btn-circle btn-accent m-r-10"
-                                    @click="addShop(o?.promptEN)"
+                                    @click="addShop(o?.prompt)"
                                 >
                                     <i-ep-shopping-trolley></i-ep-shopping-trolley>
                                 </button>
                                 <button
                                     class="btn btn-sm btn-circle btn-secondary"
-                                    @click="copy(o?.promptEN)"
+                                    @click="copy(o?.prompt)"
                                 >
                                     <i-ep-document-copy></i-ep-document-copy>
                                 </button>
                             </div>
-                        </div>
-                    </ClientOnly>
-                </div>
-            </template>
-            <template v-if="tagActive">
-                <div class="tag-list">
-                    <ClientOnly>
-                        <div
-                            v-for="(o, oIndex) in tagsLists"
-                            :key="oIndex"
-                            v-animate-css="{
-                                direction: 'modifySlideInUp',
-                                delay: oIndex * 30,
-                            }"
-                            class="tag-item-img ll-media bg-base-100"
-                            :data-index="oIndex"
-                        >
-                            <div
-                                v-if="showImage && tagActive !== 5 && tagActive !== 6"
-                                class="image-con"
-                            >
-                                <nuxt-img
-                                    v-if="o?.fileUrl"
-                                    :src="o?.fileUrl"
-                                    :placeholder="[100, 50, 10]"
-                                    loading="lazy"
-                                    @click="preview(o)"
-                                />
-                            </div>
-                            <div class="text-con">
-                                <el-tooltip
-                                    class="box-item"
-                                    effect="dark"
-                                    :content="o?.promptEN"
-                                    placement="top"
-                                >
-                                    <p v-if="o?.title" class="en">
-                                        {{
-                                            o?.title.length > 24
-                                                ? o?.title.slice(0, 24) + '...'
-                                                : o?.title
-                                        }}
-                                    </p>
-                                    <p v-else class="en">
-                                        {{
-                                            o?.promptEN.length > 24
-                                                ? o?.promptEN.slice(0, 24) + '...'
-                                                : o?.promptEN
-                                        }}
-                                    </p>
-                                </el-tooltip>
-                            </div>
-                            <div class="button-con">
-                                <button
-                                    class="btn btn-sm btn-circle btn-accent m-r-10"
-                                    @click="addShop(o?.promptEN)"
-                                >
-                                    <i-ep-shopping-trolley></i-ep-shopping-trolley>
-                                </button>
-                                <button
-                                    class="btn btn-sm btn-circle btn-secondary"
-                                    @click="copy(o?.promptEN)"
-                                >
-                                    <i-ep-document-copy></i-ep-document-copy>
-                                </button>
-                            </div>
-                        </div>
-                    </ClientOnly>
-                </div>
-            </template>
-            <template v-else>
-                <div class="tag-list">
-                    <div
-                        v-for="(o, oIndex) in tagsLists"
-                        :key="oIndex"
-                        class="tag-item-img ll-media bg-base-100"
-                        :data-index="oIndex"
-                    >
-                        <div
-                            v-if="showImage && tagActive !== 5 && tagActive !== 6"
-                            class="image-con"
-                        >
-                            <nuxt-img
-                                v-if="o?.min_imgbb_url"
-                                :src="o?.min_imgbb_url ?? ''"
-                                :placeholder="[100, 50, 10]"
-                                loading="lazy"
-                                @click="preview(o)"
-                            />
-                        </div>
-                        <div class="text-con">
-                            <el-tooltip
-                                class="box-item"
-                                effect="dark"
-                                :content="o?.prompt"
-                                placement="top"
-                            >
-                                <p v-if="o?.title" class="en">
-                                    {{
-                                        o?.title.length > 24
-                                            ? o?.title.slice(0, 24) + '...'
-                                            : o?.title
-                                    }}
-                                </p>
-                                <p v-else class="en">
-                                    {{
-                                        o?.prompt.length > 24
-                                            ? o?.prompt.slice(0, 24) + '...'
-                                            : o?.prompt
-                                    }}
-                                </p>
-                            </el-tooltip>
-                        </div>
-                        <div class="button-con">
-                            <button
-                                class="btn btn-sm btn-circle btn-accent m-r-10"
-                                @click="addShop(o?.prompt)"
-                            >
-                                <i-ep-shopping-trolley></i-ep-shopping-trolley>
-                            </button>
-                            <button
-                                class="btn btn-sm btn-circle btn-secondary"
-                                @click="copy(o?.prompt)"
-                            >
-                                <i-ep-document-copy></i-ep-document-copy>
-                            </button>
                         </div>
                     </div>
-                </div>
-            </template>
-        </div>
-        <MobileTemplateDetail
-            v-model="showPreview"
-            :current-template="currentTemplate"
-        ></MobileTemplateDetail>
+                </template>
+            </div>
+            <MobileTemplateDetail
+                v-model="showPreview"
+                :current-template="currentTemplate"
+            ></MobileTemplateDetail>
+        </NuxtLayout>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, Ref } from 'vue';
 import lodash from 'lodash';
+
+definePageMeta({
+    layout: false,
+});
 
 const { copy } = useCopy();
 const { addShop } = useShop();
@@ -410,6 +416,9 @@ onUnmounted(() => {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
+    .content {
+        padding: 15px;
+    }
 }
 
 .type-list .animation-button {

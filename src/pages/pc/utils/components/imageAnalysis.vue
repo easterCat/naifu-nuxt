@@ -212,7 +212,7 @@ const handlePictureCardPreview: UploadProps['onPreview'] = (uploadFile) => {
 
 const previewURL = (image = '') => {
     const { $viewerApi } = useNuxtApp();
-    const $viewer = $viewerApi({
+    $viewerApi({
         images: [image],
     });
 };

@@ -1,16 +1,22 @@
 <template>
     <div class="gelbooru-tags-page page">
-        <ClientOnly><MobileAppHeader /></ClientOnly>
-        <div class="content">
-            <MobileAppBanner placeholder="搜索标签" @search-change="searchChange" />
-            <Gelbooru :search-text="searchText"></Gelbooru>
-        </div>
+        <NuxtLayout name="mobile">
+            <ClientOnly><MobileAppHeader /></ClientOnly>
+            <div class="content">
+                <MobileAppBanner placeholder="搜索标签" @search-change="searchChange" />
+                <Gelbooru :search-text="searchText"></Gelbooru>
+            </div>
+        </NuxtLayout>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, Ref } from 'vue';
 import Gelbooru from './components/gelbooru.vue';
+
+definePageMeta({
+    layout: false,
+});
 
 const searchText: Ref<string> = ref('');
 
@@ -24,6 +30,9 @@ const searchChange = (val: any) => {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
+    .content {
+        padding: 15px;
+    }
 }
 
 .type-list .animation-button {

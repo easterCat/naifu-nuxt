@@ -4,26 +4,23 @@
             <ClientOnly><MobileAppHeader /></ClientOnly>
             <div class="content">
                 <div class="banner-con">
-                    <MobileAppBanner placeholder="请输入关键标签"></MobileAppBanner>
+                    <MobileAppBanner
+                        placeholder="请输入关键标签"
+                        @search-change="searchChange"
+                    ></MobileAppBanner>
                 </div>
-                <ClientOnly>
-                    <div v-animate-css="{ direction: 'modifySlideInUp' }" class="control-blur-btns">
-                        <button
-                            class="btn btn-sm m-r-10"
-                            :class="[openImageFlur ? 'btn-accent' : 'btn-secondary-30']"
-                            @click="() => (openImageFlur = true)"
+                <MobileImageFlur @get-image-flur="getImageFlur">
+                    <template #right>
+                        <select
+                            class="w-32 max-w-xs select select-bordered select-sm"
+                            :disabled="loading"
+                            @change="dataFromChange"
                         >
-                            模糊
-                        </button>
-                        <button
-                            class="btn btn-sm"
-                            :class="[!openImageFlur ? 'btn-accent' : 'btn-secondary-30']"
-                            @click="() => (openImageFlur = false)"
-                        >
-                            原图
-                        </button>
-                    </div>
-                </ClientOnly>
+                            <option :selected="curDataFrom === 'Noval'">Noval</option>
+                            <option :selected="curDataFrom === 'Gelbooru'">Gelbooru</option>
+                        </select>
+                    </template>
+                </MobileImageFlur>
                 <el-row class="list-con" :gutter="20">
                     <ClientOnly>
                         <el-col
@@ -39,13 +36,16 @@
                             :lg="4"
                             :xl="4"
                         >
-                            <div v-if="tem" class="shadow-xl card card-compact bg-base-100">
+                            <div v-if="tem" class="shadow-xl card card-compact bg-base-100 glass">
                                 <figure>
                                     <nuxt-img
                                         class="image"
                                         :src="tem?.minify_preview"
                                         loading="lazy"
-                                        :class="{ 'image-blur': !!openImageFlur }"
+                                        :class="{
+                                            'high-image-blur': imageFlur === 'high',
+                                            'low-image-blur': imageFlur === 'low',
+                                        }"
                                     />
                                 </figure>
                                 <div class="card-body">
@@ -62,7 +62,13 @@
                                             class="btn btn-accent btn-sm"
                                             @click="cardClick(tem)"
                                         >
-                                            模板详情
+                                            详情
+                                        </button>
+                                        <button
+                                            class="btn btn-primary btn-sm"
+                                            @click="exportPromptToShop(tem)"
+                                        >
+                                            购物车
                                         </button>
                                     </div>
                                 </div>
@@ -116,6 +122,7 @@
 <script lang="ts" setup>
 import { Ref } from 'vue';
 import { ID_INJECTION_KEY } from 'element-plus';
+import lodash from 'lodash';
 
 definePageMeta({
     layout: false,
@@ -126,8 +133,8 @@ nuxtApp.vueApp.provide(ID_INJECTION_KEY, {
     prefix: Math.floor(Math.random() * 1000),
     current: 0,
 });
+const { setShop } = useShop();
 
-const openImageFlur = ref(true);
 const loading = ref(false);
 const pageIndex = ref(1);
 const pageSize = ref(36);
@@ -136,6 +143,13 @@ const total = ref(0);
 const showPreview = ref(false);
 const templatesList: Ref<any[] | null> = ref([]);
 const currentTemplate: Ref<any | null> = ref(null);
+const curDataFrom = ref('Gelbooru');
+const searchText = ref('');
+const imageFlur = ref('high');
+
+onMounted(() => {
+    loadData();
+});
 
 const currentList = computed(() => {
     const arr = Array.from({ length: totalPage.value }, (element, index) => index).slice(
@@ -145,28 +159,64 @@ const currentList = computed(() => {
     return arr;
 });
 
+const getImageFlur = (value: any) => {
+    imageFlur.value = value;
+};
+
 const cardClick = (tem: any) => {
-    currentTemplate.value = { ...tem };
+    if (curDataFrom.value === 'Noval') {
+        currentTemplate.value = { ...tem };
+    } else {
+        currentTemplate.value = {
+            ...tem,
+            prompt: `masterpiece, best quality, ${tagsAddComma(tem.prompt)}`,
+        };
+    }
+
     showPreview.value = true;
 };
+
+const tagsAddComma = (value: string) => {
+    return value.replace(/\s+/g, ', ').replace(/\s*(，+|,+)\s*/g, ', ');
+};
+
+const searchChange = lodash.debounce(async (val: any) => {
+    // if (val === searchText.value) return;
+    searchText.value = val;
+    pageIndex.value = 1;
+    loadData();
+}, 1200);
 
 const loadData = async () => {
     if (loading.value) return;
     loading.value = true;
-    const { TemplateApi } = useApi();
-    const result: any = await TemplateApi.getTemplatesNoval({
-        pageIndex: pageIndex.value,
-        pageSize: pageSize.value,
-    });
+    const { TemplateApi, DanbooruApi } = useApi();
+    let result: any = null;
+    if (curDataFrom.value === 'Noval') {
+        result = await TemplateApi.getTemplatesNoval({
+            pageIndex: pageIndex.value,
+            pageSize: pageSize.value,
+        });
+    } else {
+        result = await DanbooruApi.searchBooruList({
+            pageIndex: pageIndex.value,
+            pageSize: pageSize.value,
+            searchText: searchText.value,
+        });
+    }
     loading.value = false;
     templatesList.value = result?.templates;
     total.value = result.total;
     totalPage.value = Math.ceil(total.value / pageSize.value);
 };
 
-onMounted(() => {
-    loadData();
-});
+const exportPromptToShop = (tem: any) => {
+    if (tem?.prompt.includes('masterpiece') || tem?.prompt.includes('Masterpiece')) {
+        setShop(tem?.prompt);
+    } else {
+        setShop(`masterpiece, best quality, ${tagsAddComma(tem?.prompt)}`);
+    }
+};
 
 const goTo = (e: any) => {
     currentPage(Number(e.target.value));
@@ -198,27 +248,37 @@ const nextPage = () => {
     pageIndex.value = pageIndex.value + 1;
     loadData();
 };
+
+const dataFromChange = (e: any) => {
+    curDataFrom.value = e.target.value;
+    if (e.target.value === 'Gelbooru') {
+        pageIndex.value = 1;
+        pageSize.value = 100;
+        loadData();
+    } else {
+        pageIndex.value = 1;
+        pageSize.value = 36;
+        loadData();
+    }
+};
 </script>
 
 <style lang="scss" scoped>
-.image-blur {
-    filter: blur(10px);
+.high-image-blur {
+    filter: blur(8px);
+}
+.low-image-blur {
+    filter: blur(4px);
 }
 .template-page {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
 
-    .control-blur-btns {
-        padding: 18px 0px 10px 2px;
-        .btn {
-            color: #fff;
-        }
+    .content {
+        padding: 15px;
     }
 
-    .btn-secondary-30 {
-        background-color: hsl(var(--s) / 0.3);
-    }
     .list-con {
         min-height: 50vh;
     }

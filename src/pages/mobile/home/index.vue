@@ -120,7 +120,7 @@ const showDetail = (tem: any) => {
 };
 
 const searchChange = lodash.debounce(async (val: any) => {
-    if (val === searchText.value) return;
+    // if (val === searchText.value) return;
     imageList.value = [];
     searchText.value = val;
     loadingStatus.value = true;
@@ -165,17 +165,13 @@ onMounted(() => {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
+
     .content {
-        padding: 20px 12px 20px 12px;
-    }
-    .banner-con {
-        padding-bottom: 8px;
-        padding-left: 8px;
-        padding-right: 8px;
+        padding: 15px;
     }
 
     .control-blur-btns {
-        padding: 10px 8px 10px 10px;
+        padding: 10px 0;
 
         .btn {
             color: #fff;

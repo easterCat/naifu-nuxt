@@ -8,7 +8,7 @@ module.exports = {
     proseWrap: 'never',
     arrowParens: 'always', //  (x) => {} 箭头函数参数只有一个时是否要有小括号。avoid：省略括号
     bracketSpacing: true, // 在括号和对象的文字之间加上一个空格
-    eslintIntegration: true, // 让prettier使用eslint的代码格式进行校验
+    // eslintIntegration: true, // 让prettier使用eslint的代码格式进行校验
     endOfLine: 'auto', // 结尾是 \n \r \n\r auto
     htmlWhitespaceSensitivity: 'ignore', // vue template 中的结束标签结尾尖括号掉到了下一行
 };

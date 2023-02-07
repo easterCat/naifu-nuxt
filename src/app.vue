@@ -1,6 +1,6 @@
 <template>
-    <div class="stable-app">
-        <NuxtLayout name="default">
+    <div class="naifu-app">
+        <NuxtLayout>
             <NuxtLoadingIndicator />
             <NuxtPage />
         </NuxtLayout>

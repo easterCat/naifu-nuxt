@@ -13,6 +13,7 @@ class AuthApi extends Request {
 
     async logout() {
         const result = await this.post('/auth/logout/access');
+        const result2 = await this.post('/auth/logout/refresh');
         return result;
     }
 

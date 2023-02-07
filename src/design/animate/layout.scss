@@ -2,6 +2,7 @@
 .layout-leave-active {
     transition: all 0.5s cubic-bezier(0.42, 0, 0.58, 1);
 }
+
 .layout-enter-from,
 .layout-leave-to {
     transform: translateY(20px);

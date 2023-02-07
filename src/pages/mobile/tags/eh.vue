@@ -1,11 +1,13 @@
 <template>
     <div class="eh-tags-page page">
-        <ClientOnly><MobileAppHeader /></ClientOnly>
-        <div class="content">
-            <MobileAppBanner placeholder="搜索标签" @search-change="searchChange" />
-            <EHentai :search-text="searchText1"></EHentai>
-            <EHentaiMore :search-text="searchText2"></EHentaiMore>
-        </div>
+        <NuxtLayout name="mobile">
+            <ClientOnly><MobileAppHeader /></ClientOnly>
+            <div class="content">
+                <MobileAppBanner placeholder="搜索标签" @search-change="searchChange" />
+                <EHentai :search-text="searchText1"></EHentai>
+                <EHentaiMore :search-text="searchText2"></EHentaiMore>
+            </div>
+        </NuxtLayout>
     </div>
 </template>
 
@@ -13,6 +15,10 @@
 import { ref, Ref } from 'vue';
 import EHentai from './components/eHentai.vue';
 import EHentaiMore from './components/eHentaiMore.vue';
+
+definePageMeta({
+    layout: false,
+});
 
 const searchText1: Ref<string> = ref('');
 const searchText2: Ref<string> = ref('');
@@ -28,6 +34,9 @@ const searchChange = (val: any) => {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
+    .content {
+        padding: 15px;
+    }
 }
 
 .type-list .animation-button {

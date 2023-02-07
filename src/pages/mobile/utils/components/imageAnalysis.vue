@@ -69,11 +69,11 @@
             </el-upload>
         </div>
 
-        <pc-area-title title="解析标签 ">
+        <mobile-area-title title="解析标签 ">
             <template #titleSide>
                 <span style="font-size: 12px">(基于deepdanbooru解析)</span>
             </template>
-        </pc-area-title>
+        </mobile-area-title>
         <div class="tags-con">
             <template v-for="(tag, tIndex) in promptList" :key="tIndex">
                 <button class="btn btn-sm btn-secondary m-r-10 m-b-10">

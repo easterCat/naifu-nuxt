@@ -239,13 +239,14 @@ onMounted(() => {
         .image-con {
             position: absolute;
             top: 0;
-            width: 100%;
-            height: calc(100% - 80px);
+            width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: calc(100% - 80px);
             display: flex;
             justify-content: center;
 
             img {
-                width: auto;
                 max-height: calc(100% - 10px);
                 border-radius: 10px;
             }
