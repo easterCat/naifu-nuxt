@@ -236,7 +236,7 @@ const themes = [
     'night',
     'coffee',
     'winter',
-    'Sunset',
+    'MyDeepTheme',
 ];
 
 const indexStore: any = useIndexStore();

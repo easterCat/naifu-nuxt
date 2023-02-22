@@ -36,7 +36,7 @@ module.exports = {
         },
     ],
     rules: {
-        // js/ts
+        // js
         'no-console': 'off',
         'no-unused-vars': 'off',
         'no-unused-expressions': 'off',
@@ -51,6 +51,8 @@ module.exports = {
         'block-scoped-var': 'error',
         'no-constant-condition': ['error', { checkLoops: false }],
         'no-redeclare': 'off',
+
+        // ts
         '@typescript-eslint/no-redeclare': 'error',
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-unused': 'off',

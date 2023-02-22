@@ -3,7 +3,7 @@ module.exports = {
     daisyui: {
         themes: [
             {
-                Sunset: {
+                MyDeepTheme: {
                     'base-100': '#000000',
                     'base-200': '#121032',
                     neutral: '#494554',

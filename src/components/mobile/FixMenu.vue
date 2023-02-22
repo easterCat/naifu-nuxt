@@ -71,7 +71,7 @@ const themes = [
     'night',
     'coffee',
     'winter',
-    'Sunset',
+    'MyDeepTheme',
 ];
 const drawer = ref(false);
 const themeVivible: Ref<boolean> = ref(false);

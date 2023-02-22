@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     sourcemap: false,
     srcDir: 'src/',
     css: ['@/design/index.scss'],
+    typescript: { strict: true },
     modules: [
         '@nuxt/image-edge',
         '@nuxtjs/tailwindcss',
@@ -23,7 +24,7 @@ export default defineNuxtConfig({
         '@pinia/nuxt',
     ],
     colorMode: {
-        preference: 'Sunset',
+        preference: 'MyDeepTheme',
         dataValue: 'theme',
     },
     image: {
