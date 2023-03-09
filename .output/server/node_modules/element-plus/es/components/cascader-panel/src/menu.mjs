@@ -4,7 +4,7 @@ import '../../../hooks/index.mjs';
 import '../../../utils/index.mjs';
 import { Loading } from '@element-plus/icons-vue';
 import { ElIcon } from '../../icon/index.mjs';
-import ElCascaderNode from './node.mjs';
+import ElCascaderNode from './node2.mjs';
 import { CASCADER_PANEL_INJECTION_KEY } from './types.mjs';
 import _export_sfc from '../../../_virtual/plugin-vue_export-helper.mjs';
 import { useNamespace } from '../../../hooks/use-namespace/index.mjs';

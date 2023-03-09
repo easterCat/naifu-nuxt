@@ -1,5 +1,0 @@
-const a = ".el-pagination[data-v-2efd3c4e]{--tw-bg-opacity:1;--el-color-primary:hsl(var(--p)/var(--tw-bg-opacity))!important;--el-pagination-border-radius:10px!important;--el-color-white:hsl(var(--pc)/var(--tw-bg-opacity))!important}.el-input[data-v-2efd3c4e]{--el-input-border-radius:10px!important}.el-textarea[data-v-2efd3c4e]{border:1px solid hsl(var(--p)/.3);border-radius:10px}.el-textarea .el-textarea__inner[data-v-2efd3c4e]{border-radius:10px}.el-drawer[data-v-2efd3c4e]{--el-drawer-bg-color:hsl(var(--b3,var(--b2))/var(1))!important}.home-page[data-v-2efd3c4e]{height:100vh;overflow-y:hidden;overflow-y:scroll}.home-page .content[data-v-2efd3c4e]{padding:20px 12px}.home-page .banner-con[data-v-2efd3c4e]{padding-bottom:8px;padding-left:8px;padding-right:8px}.home-page .control-blur-btns[data-v-2efd3c4e]{padding:10px 8px 10px 10px}.home-page .control-blur-btns .btn[data-v-2efd3c4e]{color:#fff}.home-page .btn-s-30[data-v-2efd3c4e]{background-color:hsl(var(--s)/.3)}\n";
-
-const indexStyles_45dab66c = [a];
-
-export { indexStyles_45dab66c as default };

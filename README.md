@@ -46,7 +46,7 @@ yarn generate
 > 将打包出的 dist 发布到 github page 即可
 
 - github页面 <https://eastercat.github.io/naifu/pc/home>
-- 体验地址 <https://www.ptg.life>
+- 体验地址 <http://www.naifuai.top>
 
 Checkout the [deployment documentation](https://v3.nuxtjs.org/guide/deploy/presets) for more information.
 

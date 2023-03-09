@@ -1,1 +1,0 @@
-import{I as s}from"./pinia.17670579.js";const t=s({id:"link-store",state:()=>({links:[],types:[]}),getters:{linkList:s=>s.links,typeList:s=>s.types},actions:{setLinks(s){this.links=s},setTypes(s){this.types=s}}});export{t as u};
