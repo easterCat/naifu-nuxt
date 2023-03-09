@@ -1,1 +1,0 @@
-import{I as e}from"./pinia.17670579.js";const t=e({id:"setting-store",state:()=>({drawNumber:1,tagImageVisible:!1}),getters:{getTagImageVisible:e=>e.tagImageVisible},actions:{setDrawNumber(e){this.drawNumber=e},setTagImageVisible(e){this.tagImageVisible=e}}});export{t as u};

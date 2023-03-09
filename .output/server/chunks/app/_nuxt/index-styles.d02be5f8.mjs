@@ -1,5 +1,0 @@
-const a = ".el-pagination[data-v-e4fc35ec]{--tw-bg-opacity:1;--el-color-primary:hsl(var(--p)/var(--tw-bg-opacity))!important;--el-pagination-border-radius:2.667vw!important;--el-color-white:hsl(var(--pc)/var(--tw-bg-opacity))!important}.el-input[data-v-e4fc35ec]{--el-input-border-radius:2.667vw!important}.el-textarea[data-v-e4fc35ec]{border:1px solid hsl(var(--p)/.3);border-radius:2.667vw}.el-textarea .el-textarea__inner[data-v-e4fc35ec]{border-radius:2.667vw}.el-drawer[data-v-e4fc35ec]{--el-drawer-bg-color:hsl(var(--b3,var(--b2))/var(1))!important}.home-page[data-v-e4fc35ec]{height:100vh;overflow-y:hidden;overflow-y:scroll}.home-page .content[data-v-e4fc35ec]{padding:5.333vw 3.2vw}.home-page .banner-con[data-v-e4fc35ec]{padding-bottom:2.133vw;padding-left:2.133vw;padding-right:2.133vw}.home-page .control-blur-btns[data-v-e4fc35ec]{padding:2.667vw 2.133vw 2.667vw 2.667vw}.home-page .control-blur-btns .btn[data-v-e4fc35ec]{color:#fff}.home-page .btn-s-30[data-v-e4fc35ec]{background-color:hsl(var(--s)/.3)}\n";
-
-const indexStyles_d02be5f8 = [a];
-
-export { indexStyles_d02be5f8 as default };

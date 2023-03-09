@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash-unified';
-import Node from './node2.mjs';
+import Node from './node.mjs';
 
 const flatNodes = (nodes, leafOnly) => {
   return nodes.reduce((res, node) => {
