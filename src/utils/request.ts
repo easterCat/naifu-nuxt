@@ -60,6 +60,7 @@ const fetch = (url: string, options?: any, from?: string): Promise<any> => {
                     }
                 } else if (result?.code === 500) {
                     errorMessage(result?.msg);
+                    reject(result);
                 } else {
                     resolve(result);
                 }

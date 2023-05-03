@@ -4,7 +4,7 @@
             <img src="@/assets/imgs/banner/sYw7uX71Xe.jpeg" alt="" />
         </div>
         <PcAppAnimate>
-            <div class="banner-message">完全基于Github Page的静态资源网站,记录使用</div>
+            <div class="banner-message">基于Github Page的静态资源网站,记录使用</div>
         </PcAppAnimate>
         <PcAppAnimate>
             <div class="banner-search">
@@ -110,6 +110,7 @@ const search = () => {
         color: #fff;
     }
 }
+
 :deep(.el-input__wrapper) {
     border-radius: 30px;
     background: rgba(255, 255, 255, 0.7);
