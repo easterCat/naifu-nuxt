@@ -51,7 +51,10 @@
             <div class="tag-list">
                 <ClientOnly>
                     <div
-                        v-for="(o, oIndex) in tagsLists"
+                        v-for="(o, oIndex) in tagsLists.slice(
+                            (currentPage - 1) * 30,
+                            currentPage * 30,
+                        )"
                         :key="o?.en + oIndex"
                         v-animate-css="{
                             direction: 'modifySlideInUp',
@@ -90,6 +93,17 @@
                     </div>
                 </ClientOnly>
             </div>
+            <div class="flex justify-center btn-group m-t-10">
+                <button
+                    v-for="(item, index) in Array.from({ length: pages })"
+                    :key="index"
+                    class="btn"
+                    :class="{ 'btn-active': currentPage === index + 1 }"
+                    @click="pageClick(index + 1)"
+                >
+                    {{ index + 1 }}
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -110,14 +124,19 @@ const tagsLists = ref(tagsMenus.value[0].data);
 const tagActive: Ref<number> = ref(0);
 const imageVisible: Ref<boolean> = ref(true);
 const searchText: Ref<string> = ref('');
+const pages = ref(1);
+const currentPage = ref(1);
 
 watch(imageVisible, (newValue: boolean) => {
     settingStore.setTagImageVisible(newValue);
 });
 
 const menuItemClick = (key: number) => {
+    currentPage.value = 1;
     tagsLists.value = tagsMenus.value[key].data;
     tagActive.value = key;
+    const len = tagsMenus.value[key].data.length;
+    pages.value = Math.ceil(len / 30);
 };
 
 const searchChange = (val: any) => {
@@ -129,6 +148,10 @@ const previewURL = (image = '') => {
     $viewerApi({
         images: [image],
     });
+};
+
+const pageClick = (page: number) => {
+    currentPage.value = page;
 };
 
 onMounted(() => {
@@ -148,6 +171,7 @@ onMounted(() => {
     height: 100vh;
     overflow-y: hidden;
     overflow-y: scroll;
+
     .content {
         padding: 20px;
     }

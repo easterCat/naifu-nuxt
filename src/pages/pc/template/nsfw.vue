@@ -23,7 +23,7 @@
                     </select>
                 </template>
             </PcImageFlur>
-            <el-row class="list-con" :gutter="20">
+            <el-row v-if="!loading" class="list-con" :gutter="20">
                 <ClientOnly>
                     <el-col
                         v-for="(tem, tIndex) in templatesList"
@@ -60,6 +60,9 @@
                                 </h2>
                                 <p>{{ tem?.author }}</p>
                                 <div class="justify-end card-actions">
+                                    <button class="btn btn-secondary btn-sm" @click="generate(tem)">
+                                        生成
+                                    </button>
                                     <button class="btn btn-accent btn-sm" @click="cardClick(tem)">
                                         详情
                                     </button>
@@ -75,6 +78,10 @@
                     </el-col>
                 </ClientOnly>
             </el-row>
+            <div v-if="loading" class="spinner">
+                <div class="dot1"></div>
+                <div class="dot2"></div>
+            </div>
 
             <div class="demo-pagination-block">
                 <div v-if="totalPage && totalPage > 0" class="btn-group">
@@ -117,6 +124,10 @@
             v-model="showPreview"
             :current-template="currentTemplate"
         ></PcTemplateDetail>
+        <PcGenerateImageModal
+            v-model="showGenerate"
+            :current-template="currentTemplate"
+        ></PcGenerateImageModal>
     </div>
 </template>
 
@@ -134,10 +145,11 @@ const { setShop } = useShop();
 
 const loading = ref(false);
 const pageIndex = ref(1);
-const pageSize = ref(36);
+const pageSize = ref(100);
 const totalPage = ref(0);
 const total = ref(0);
 const showPreview = ref(false);
+const showGenerate = ref(false);
 const templatesList: Ref<any[] | null> = ref([]);
 const currentTemplate: Ref<any | null> = ref(null);
 const curDataFrom = ref('Gelbooru');
@@ -155,6 +167,7 @@ const currentList = computed(() => {
             pageIndex.value > 3 ? pageIndex.value - 3 : pageIndex.value,
             pageIndex.value + 3,
         );
+        console.log('arr :>> ', arr);
     } else {
         arr = Array.from({ length: totalPage.value }, (element, index) => index).map((i) => i + 1);
     }
@@ -178,6 +191,21 @@ const cardClick = (tem: any) => {
     showPreview.value = true;
 };
 
+const generate = (tem: any) => {
+    exportPromptToShop(tem);
+
+    if (curDataFrom.value === 'Noval') {
+        currentTemplate.value = { ...tem };
+    } else {
+        currentTemplate.value = {
+            ...tem,
+            prompt: `masterpiece, best quality, ${tagsAddComma(tem.prompt)}`,
+        };
+    }
+
+    showGenerate.value = true;
+};
+
 const tagsAddComma = (value: string) => {
     return value.replace(/\s+/g, ', ').replace(/\s*(，+|,+)\s*/g, ', ');
 };
@@ -191,25 +219,34 @@ const searchChange = lodash.debounce(async (val: any) => {
 
 const loadData = async () => {
     if (loading.value) return;
-    loading.value = true;
-    const { TemplateApi, DanbooruApi } = useApi();
-    let result: any = null;
-    if (curDataFrom.value === 'Noval') {
-        result = await TemplateApi.getTemplatesNoval({
-            pageIndex: pageIndex.value,
-            pageSize: pageSize.value,
-        });
-    } else {
-        result = await DanbooruApi.searchBooruList({
-            pageIndex: pageIndex.value,
-            pageSize: pageSize.value,
-            searchText: searchText.value,
-        });
+    try {
+        templatesList.value = [];
+        loading.value = true;
+        const { TemplateApi, DanbooruApi } = useApi();
+        let result: any = null;
+        if (curDataFrom.value === 'Noval') {
+            result = await TemplateApi.getTemplatesNoval({
+                pageIndex: pageIndex.value,
+                pageSize: pageSize.value,
+            });
+        } else {
+            result = await DanbooruApi.searchBooruList({
+                pageIndex: pageIndex.value,
+                pageSize: pageSize.value,
+                searchText: searchText.value,
+            });
+        }
+        if (result) {
+            loading.value = false;
+            templatesList.value = result?.templates;
+            total.value = result.total;
+            totalPage.value = Math.ceil(total.value / pageSize.value);
+        } else {
+            loading.value = false;
+        }
+    } catch (error) {
+        loading.value = false;
     }
-    loading.value = false;
-    templatesList.value = result?.templates;
-    total.value = result.total;
-    totalPage.value = Math.ceil(total.value / pageSize.value);
 };
 
 const exportPromptToShop = (tem: any) => {
@@ -335,6 +372,34 @@ const dataFromChange = (e: any) => {
         width: 100%;
         display: flex;
         justify-content: center;
+    }
+
+    .spinner {
+        margin: 50px auto;
+        width: 80px;
+        height: 80px;
+        position: relative;
+        text-align: center;
+        animation: rotate 2s infinite linear;
+    }
+
+    .dot1,
+    .dot2 {
+        width: 60%;
+        height: 60%;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        background-color: hsl(var(--p) / 1);
+        border-radius: 100%;
+        animation: bounce 2s infinite ease-in-out;
+    }
+
+    .dot2 {
+        top: auto;
+        bottom: 0px;
+        -webkit-animation-delay: -1s;
+        animation-delay: -1s;
     }
 }
 </style>

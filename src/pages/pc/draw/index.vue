@@ -7,9 +7,9 @@
         <ClientOnly>
             <div v-animate-css="{ direction: 'modifySlideInUp' }" class="content">
                 <PcAreaTitle title="生成图片"></PcAreaTitle>
-                <GenerateImage
+                <PcGenerateImage
                     v-animate-css="{ direction: 'modifySlideInUp', delay: 60 }"
-                ></GenerateImage>
+                ></PcGenerateImage>
             </div>
         </ClientOnly>
     </div>
@@ -17,11 +17,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import GenerateImage from './components/generateImage.vue';
 import { utilMenus } from '~/assets/json/utils.js';
-
-const initActive = 0;
-const menuList = ref(utilMenus);
 </script>
 
 <style lang="scss" scoped>

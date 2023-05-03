@@ -14,7 +14,7 @@
                         target: `.part:nth-child(${index + 1}) > h2`,
                         container: '.link-right',
                         behavior: 'smooth',
-                        cb: (findIndex:number) => changeType(findIndex||findIndex===0 ? findIndex : index),
+                        cb: (findIndex: number) => changeType(findIndex || findIndex === 0 ? findIndex : index),
                     }"
                         :class="{ active: typeActive === index }"
                     >
@@ -45,7 +45,13 @@
                                 >
                                     <a :href="link?.href" target="_blank">
                                         <h3>
-                                            <img :src="link?.icon ?? none" />
+                                            <span v-if="link?.icon"><img :src="link?.icon" /></span>
+                                            <span v-else>
+                                                <!-- <img :src="none" /> -->
+                                                <b :style="`background-color:${randomHex()}`">
+                                                    {{ link.name.slice(0, 1) }}
+                                                </b>
+                                            </span>
                                             <span>{{ link.name }}</span>
                                             <i v-if="link?.hot" class="hot-link">
                                                 <el-icon color="red">
@@ -270,6 +276,11 @@ const filterList = (fil: any) => {
     }
 };
 
+const randomHex = () =>
+    `#${Math.floor(Math.random() * 0xffffff)
+        .toString(16)
+        .padEnd(6, '0')}`;
+
 onMounted(() => {
     linkStore = useLinkStore();
     getLinkList();
@@ -326,6 +337,7 @@ onMounted(() => {
             box-shadow: hsl(var(--p) / 0.3) 0px 8px 24px;
         }
     }
+
     .link-right {
         position: relative;
         flex: 1;
@@ -348,6 +360,7 @@ onMounted(() => {
         color: #3b3c3e;
         margin-top: 18px;
     }
+
     .part {
         width: 100%;
     }
@@ -366,6 +379,7 @@ onMounted(() => {
         position: relative;
         font-weight: bold;
     }
+
     .part h2 a {
         display: inline-block;
         margin-top: 4px;
@@ -427,11 +441,24 @@ onMounted(() => {
         font-size: 14px;
         height: 30px;
     }
+
     .part .item a h3 span {
-        width: 190px;
+        max-width: 190px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    .part .item a h3 b {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border-radius: 90px;
+        margin-right: 4px;
+        font-size: 12px;
+        line-height: 20px;
+        color: #fff;
+        text-align: center;
     }
 
     .part .item a p {
@@ -465,6 +492,7 @@ onMounted(() => {
         animation: 1.5s heart ease-in-out infinite;
     }
 }
+
 .link-item {
     display: flex;
     justify-content: flex-start;
