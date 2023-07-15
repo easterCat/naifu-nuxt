@@ -13,6 +13,8 @@ if (process.client) {
         router.replace({ path: '/pc/home' });
     }
 }
+
+
 </script>
 
 <style scoped></style>

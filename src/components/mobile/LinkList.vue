@@ -3,7 +3,7 @@
         <ClientOnly>
             <div
                 v-if="showLeftMenu"
-                v-animate-css="{ direction: 'modifySlideInLeft' }"
+                v-animate-css="{ direction: 'modifySlideInUp' }"
                 class="link-left bg-base-100"
             >
                 <ul>
@@ -29,7 +29,7 @@
             </div>
         </ClientOnly>
         <ClientOnly>
-            <div v-animate-css="{ direction: 'modifySlideInRight' }" class="link-right">
+            <div v-animate-css="{ direction: 'modifySlideInUp' }" class="link-right">
                 <div class="right-linear"></div>
                 <div class="part-list">
                     <template v-for="(typeItem, tIndex) in types" :key="typeItem">

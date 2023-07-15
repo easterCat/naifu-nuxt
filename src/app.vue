@@ -1,7 +1,7 @@
 <template>
     <div class="naifu-app">
+        <NuxtLoadingIndicator />
         <NuxtLayout>
-            <NuxtLoadingIndicator />
             <NuxtPage />
         </NuxtLayout>
     </div>

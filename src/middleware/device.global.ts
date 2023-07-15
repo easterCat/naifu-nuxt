@@ -13,9 +13,13 @@ const routeTo = (to: any, from: any) => {
 
 export default defineNuxtRouteMiddleware((to: any, from: any) => {
     if (process.client) {
-        routeTo(to, from);
-        window.onresize = () => {
+        setTimeout(() => {
             routeTo(to, from);
+        }, 1500);
+        window.onresize = () => {
+            setTimeout(() => {
+                routeTo(to, from);
+            }, 1500);
         };
     }
 });

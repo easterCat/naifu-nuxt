@@ -35,6 +35,14 @@ Start the development server on
 yarn dev
 ```
 
+## 本地开启https
+
+```bash
+mkcert localhost
+
+nuxt dev --https --ssl-cert localhost.pem --ssl-key localhost-key.pem
+```
+
 ## 生产静态页面
 
 Build the application for production:

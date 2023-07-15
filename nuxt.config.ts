@@ -22,7 +22,13 @@ export default defineNuxtConfig({
         '@nuxtjs/color-mode',
         'nuxt-icon',
         '@pinia/nuxt',
+        '@kevinmarrec/nuxt-pwa',
     ],
+    pwa: {
+        workbox: {
+            enabled: false,
+        },
+    },
     colorMode: {
         preference: 'MyDeepTheme',
         dataValue: 'theme',
@@ -41,7 +47,7 @@ export default defineNuxtConfig({
                 {
                     rel: 'icon',
                     type: 'image/x-icon',
-                    href: '/naifu/dute_favicon_32x32.ico',
+                    href: '/naifu/favicon.ico',
                 },
                 {
                     rel: 'stylesheet',

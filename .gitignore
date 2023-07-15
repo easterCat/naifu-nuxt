@@ -6,8 +6,11 @@
 .cache
 .env
 
+# nuxt3
+.output
+dist
+
 # vscode
 .settings
 .history
 .vscode
-.output
