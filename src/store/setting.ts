@@ -5,7 +5,7 @@ export const useSettingStore = defineStore({
     state: () => {
         return {
             // draw页面的默认生成图片数量
-            drawNumber: 1,
+            drawNumber: 3,
             // 标签界面默认开始图片显示
             tagImageVisible: true,
         };

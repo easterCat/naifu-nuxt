@@ -10,7 +10,7 @@
         <ClientOnly>
             <el-drawer
                 v-model="drawer"
-                size="60%"
+                size="70%"
                 title="常用网站"
                 direction="ltr"
                 :before-close="handleClose"

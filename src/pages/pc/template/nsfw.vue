@@ -60,6 +60,9 @@
                                 </h2>
                                 <p>{{ tem?.author }}</p>
                                 <div class="justify-end card-actions">
+                                    <button class="btn btn-neutral btn-sm" @click="copyTem(tem)">
+                                        复制
+                                    </button>
                                     <button class="btn btn-secondary btn-sm" @click="generate(tem)">
                                         生成
                                     </button>
@@ -142,6 +145,8 @@ nuxtApp.vueApp.provide(ID_INJECTION_KEY, {
     current: 0,
 });
 const { setShop } = useShop();
+const { copy } = useCopy();
+const { fps } = useFPS();
 
 const loading = ref(false);
 const pageIndex = ref(1);
@@ -158,6 +163,7 @@ const imageFlur = ref('high');
 
 onMounted(() => {
     loadData();
+    fps();
 });
 
 const currentList = computed(() => {
@@ -189,6 +195,11 @@ const cardClick = (tem: any) => {
     }
 
     showPreview.value = true;
+};
+
+const copyTem = (tem: any) => {
+    const prompt = `masterpiece, best quality, ${tagsAddComma(tem.prompt)}`;
+    copy(prompt);
 };
 
 const generate = (tem: any) => {

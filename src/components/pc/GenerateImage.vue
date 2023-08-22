@@ -66,7 +66,7 @@
                     clearable
                     size="large"
                 >
-                    <template #prepend>
+                    <!-- <template #prepend>
                         <el-select
                             v-model="postUrlProvide"
                             placeholder="选择接口"
@@ -83,6 +83,12 @@
                                 value="https://cube-joan-released-philips.trycloudflare.com/generate-stream"
                             />
                         </el-select>
+                    </template> -->
+                    <template #prepend>
+                        <el-button @click="showDrawServerDrawer">
+                            服务列表
+                            <Icon name="fluent:link-square-12-filled" size="14" />
+                        </el-button>
                     </template>
                 </el-input>
             </el-col>
@@ -114,22 +120,16 @@
                 <input
                     type="range"
                     min="1"
-                    max="9"
+                    max="30"
                     :value="settingStore.drawNumber"
                     class="range range-xs"
                     step="1"
                     @change="rangeChange"
                 />
                 <div class="flex justify-between w-full text-xs">
-                    <span>1张</span>
-                    <span>2张</span>
-                    <span>3张</span>
-                    <span>4张</span>
-                    <span>5张</span>
-                    <span>6张</span>
-                    <span>7张</span>
-                    <span>8张</span>
-                    <span>9张</span>
+                    <span v-for="(item, index) in Array(30).fill('')" :key="index">
+                        {{ index + 1 }}张
+                    </span>
                 </div>
             </el-col>
         </el-row>
@@ -189,6 +189,67 @@
         <div v-else class="tags-con">
             <p class="no-data">暂无记录</p>
         </div>
+
+        <ClientOnly>
+            <el-drawer
+                v-model="drawServerDrawer"
+                size="100%"
+                title="服务器列表"
+                direction="btt"
+                :before-close="handleDrawServerClose"
+            >
+                <template #title>
+                    <span>
+                        服务器列表
+                        <button class="btn btn-primary btn-sm" @click="testServer">
+                            测试服务 {{ testLoading ? '测试中...' : '' }}
+                        </button>
+                    </span>
+                </template>
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra">
+                        <!-- head -->
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>url</th>
+                                <th>preview</th>
+                                <th>models</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- row 1 -->
+                            <template v-for="(item, index) in serverList" :key="item?.url + index">
+                                <tr v-if="!testFinished || item?.images">
+                                    <th>
+                                        <button
+                                            class="btn btn-accent btn-sm"
+                                            @click="selectServer(item)"
+                                        >
+                                            select {{ index + 1 }}¬
+                                        </button>
+                                    </th>
+                                    <td>{{ item?.url }}</td>
+                                    <td>
+                                        <img
+                                            v-if="item?.images"
+                                            :src="`data:image/jpeg;base64,${item?.images[0]}`"
+                                            :alt="item?.url"
+                                            @click="
+                                                previewURL(
+                                                    'data:image/jpeg;base64,' + item?.images[0],
+                                                )
+                                            "
+                                        />
+                                    </td>
+                                    <td>{{ item?.models }}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </el-drawer>
+        </ClientOnly>
     </div>
 </template>
 
@@ -208,6 +269,7 @@ const { $store } = useNuxtApp();
 const { copy } = useCopy();
 const { shop, setShop } = useShop();
 
+const drawServerDrawer: Ref<boolean> = ref(false);
 const key = 'prompt_history';
 const textArea: Ref<string> = ref('');
 const postUrl: Ref<string> = ref('');
@@ -221,6 +283,10 @@ const generateImageOptions = ref([
     {
         label: '图片大小 512*768',
         value: '512*768',
+    },
+    {
+        label: '图片大小 600*800',
+        value: '600*800',
     },
     {
         label: '图片大小 768*512',
@@ -243,33 +309,81 @@ const generateImageOptions = ref([
         value: '1024*768',
     },
 ]);
+
 const generateImageSize = ref('512*768');
 const generateImageSamplerOptions = ref([
     {
-        label: 'k_euler_ancestral',
-        value: 'k_euler_ancestral',
+        label: 'Euler a',
+        value: 'Euler a',
     },
     {
-        label: 'k_euler',
-        value: 'k_euler',
+        label: 'Euler',
+        value: 'Euler',
     },
     {
-        label: 'k_lms',
-        value: 'k_lms',
+        label: 'LMS',
+        value: 'LMS',
     },
     {
-        label: 'plms',
-        value: 'plms',
+        label: 'Heun',
+        value: 'Heun',
     },
     {
-        label: 'ddim',
-        value: 'ddim',
+        label: 'DPM2',
+        value: 'DPM2',
+    },
+    {
+        label: 'DPM2 a',
+        value: 'DPM2 a',
+    },
+    {
+        label: 'DPM++ 2S a',
+        value: 'DPM++ 2S a',
+    },
+    {
+        label: 'DPM++ 2M',
+        value: 'DPM++ 2M',
+    },
+    {
+        label: 'DPM fast',
+        value: 'DPM fast',
+    },
+    {
+        label: 'DPM adaptive',
+        value: 'DPM adaptive',
+    },
+    {
+        label: 'LMS Karras',
+        value: 'LMS Karras',
+    },
+    {
+        label: 'DPM2 Karras',
+        value: 'DPM2 Karras',
+    },
+    {
+        label: 'DPM2 a Karras',
+        value: 'DPM2 a Karras',
+    },
+    {
+        label: 'DPM++ 2S a Karras',
+        value: 'DPM++ 2S a Karras',
+    },
+    {
+        label: 'DDIM',
+        value: 'DDIM',
+    },
+    {
+        label: 'PLMS',
+        value: 'PLMS',
     },
 ]);
-const generateImageSampler = ref('k_euler_ancestral');
+const generateImageSampler = ref('Euler a');
 const uc = ref(
-    'lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, normal quality, jpeg artifacts, signature, watermark, username, blurry',
+    'sketch,duplicate,ugly,text,error,logo,monochrome,worst face,(bad and mutated hands:1.3),(worst quality:1.3),(low quality:1.3),(normal quality:1.3),(blurry:1.3),horror,geometry,(missing fingers),multiple limbs,bad anatomy,(interlocked fingers:1.2),Ugly Fingers,(extra digit,extra hands,extra fingers,extra legs,extra arms),fewer digits,(deformed fingers:1.2),(long fingers:1.2),signature,watermark,username,multiple panels,',
 );
+const serverList: Ref<any[]> = ref([]);
+const testLoading: Ref<boolean> = ref(false);
+const testFinished: Ref<boolean> = ref(false);
 
 onMounted(() => {
     getData();
@@ -313,10 +427,45 @@ const postUrlProvideChange = (value: string) => {
 };
 
 const generateImage = () => {
-    if (postUrl.value && postUrl.value.includes('www.naifuai.site')) {
-        rrythGenerate();
-    } else {
-        naifuGenerate();
+    autodlGenerate();
+    // if (postUrl.value && postUrl.value.includes('www.naifuai.site')) {
+    //     rrythGenerate();
+    // } else {
+    //     naifuGenerate();
+    // }
+};
+
+const autodlGenerate = async () => {
+    if (loading.value) return;
+    loading.value = true;
+    const size = generateImageSize.value.split('*');
+    const width = size[0];
+    const height = size[1];
+
+    try {
+        const result = await NovalApi.rrythGenerate({
+            n_samples: settingStore.drawNumber,
+            prompt: textArea.value,
+            negative_prompt: uc.value,
+            cfg_scale: 8,
+            width,
+            height,
+            steps: 28,
+            sampler: generateImageSampler.value,
+            postUrl: postUrl.value,
+            init_images: '',
+            denoising_strength: 0.6,
+        });
+        loading.value = false;
+        const images: string[] = result.data.images;
+        gImage.value = images?.map((i: any) => {
+            return `data:image/png;base64,${i}`;
+        });
+        saveData(textArea.value);
+        exportPromptToShop(textArea.value);
+        sessionStorage.setItem('post_url', postUrl.value);
+    } catch (error) {
+        loading.value = false;
     }
 };
 
@@ -393,16 +542,13 @@ const naifuGenerate = async () => {
     const width = size[0];
     const height = size[1];
     const seed = Math.floor(Math.random() * Math.pow(2, 32));
-    if (!postUrl.value.includes('/generate-stream')) {
-        postUrl.value = `${postUrl.value}/generate-stream`;
-    }
     try {
         const result = await NovalApi.generate({
             height,
             n_samples: settingStore.drawNumber,
             prompt: textArea.value,
             sampler: generateImageSampler.value,
-            scale: 12,
+            scale: 8,
             seed,
             steps: 28,
             uc: uc.value,
@@ -507,7 +653,7 @@ const publishTemplate = async () => {
             prompt: textArea.value,
             n_prompt: uc.value,
             size: generateImageSize.value,
-            scale: 12,
+            scale: 8,
             sampler: generateImageSampler.value,
             step: 28,
             images,
@@ -522,6 +668,39 @@ const publishTemplate = async () => {
         console.error(error);
         publishLoading.value = false;
     }
+};
+
+const showDrawServerDrawer = async () => {
+    if (serverList.value[0]) {
+        drawServerDrawer.value = true;
+        return;
+    }
+    const result = await NovalApi.getDrawServerList();
+    console.log(result);
+    if (result.code === 200 && result.data.result_urls) {
+        serverList.value = result.data.result_urls;
+    }
+    drawServerDrawer.value = true;
+};
+
+const testServer = async () => {
+    if (testLoading.value) return;
+    testLoading.value = true;
+    const result = await NovalApi.testDrawServerList();
+    if (result.code === 200 && result.data.result_urls) {
+        serverList.value = result.data.result_urls;
+    }
+    testFinished.value = true;
+    testLoading.value = false;
+};
+
+const handleDrawServerClose = () => {
+    drawServerDrawer.value = false;
+};
+
+const selectServer = (item: any) => {
+    postUrlProvideChange(item?.url || '');
+    drawServerDrawer.value = false;
 };
 </script>
 
@@ -605,5 +784,19 @@ const publishTemplate = async () => {
 
 :deep(.el-col) {
     margin-bottom: 10px;
+}
+
+:deep(.el-overlay) {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transition: all 0.5s linear;
+    height: 85vh;
+
+    .el-drawer {
+        background: hsl(var(--b1) / 1);
+    }
 }
 </style>

@@ -9,6 +9,14 @@ class NovalApi extends Request {
     rrythGenerate(body?: any) {
         return this.post('/draw/ai', body);
     }
+
+    getDrawServerList() {
+        return this.get('/draw/list');
+    }
+
+    testDrawServerList() {
+        return this.get('/draw/test');
+    }
 }
 
 export default new NovalApi();

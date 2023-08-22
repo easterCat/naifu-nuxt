@@ -3,7 +3,7 @@
     "private": true,
     "scripts": {
         "dev": "env-cmd -e development nuxt dev",
-        "dev:https": "env-cmd -e development nuxt dev --https --ssl-cert localhost.pem --ssl-key localhost-key.pem",
+        "dev:https": "env-cmd -e development nuxt dev --https --ssl-cert https/localhost.pem --ssl-key https/localhost-key.pem",
         "build": "env-cmd -e release nuxt build",
         "start": "node .output/server/index.mjs",
         "generate": "env-cmd -e github nuxt generate",

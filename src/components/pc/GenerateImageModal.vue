@@ -85,7 +85,8 @@ onMounted(() => {
         top: 30px;
         bottom: 30px;
         z-index: 2;
-        width: 1200px;
+        width: 90%;
+        max-width: 1920px;
         border-radius: 10px;
         padding: 30px;
         --tw-bg-opacity: 1;
