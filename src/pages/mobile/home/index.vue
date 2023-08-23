@@ -131,7 +131,7 @@ const searchChange = lodash.debounce(async (val: any) => {
     });
     loadingStatus.value = false;
     imageList.value = result?.templates && result?.templates.length !== 0 ? result?.templates : [];
-}, 1200);
+}, 2000);
 
 const likeTemplate = async (id: number) => {
     const result: any = await TemplateApi.likeTemplateById({ id, userId: indexStore?.userId });

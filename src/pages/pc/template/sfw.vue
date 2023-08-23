@@ -202,7 +202,7 @@ const searchChange = lodash.debounce(async (val: any) => {
     pageIndex.value = 1;
     templatesList.value =
         result?.templates && result?.templates.length !== 0 ? result?.templates : [];
-}, 1200);
+}, 2000);
 
 const tagsAddComma = (value: string) => {
     return value.replace(/\s+/g, ', ').replace(/\s*(，+|,+)\s*/g, ', ');

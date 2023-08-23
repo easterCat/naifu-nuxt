@@ -226,7 +226,7 @@ const searchChange = lodash.debounce(async (val: any) => {
     searchText.value = val;
     pageIndex.value = 1;
     loadData();
-}, 1200);
+}, 2000);
 
 const loadData = async () => {
     if (loading.value) return;
