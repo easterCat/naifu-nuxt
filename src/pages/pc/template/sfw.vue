@@ -1,9 +1,7 @@
 <template>
     <div class="sfw-page page">
-        <ClientOnly>
-            <PcAppShadow />
-            <PcAppHeader />
-        </ClientOnly>
+        <PcAppShadow />
+        <PcAppHeader />
         <div class="content">
             <div class="banner-con">
                 <PcAppBanner
@@ -12,43 +10,40 @@
                 ></PcAppBanner>
             </div>
             <PcImageFlur @get-image-flur="getImageFlur"></PcImageFlur>
-            <ClientOnly>
-                <el-row v-if="templatesList && templatesList.length" class="list-con" :gutter="20">
-                    <el-col
-                        v-for="(tem, tIndex) in templatesList"
-                        :key="tIndex"
-                        v-animate-css="{
-                            direction: 'modifySlideInUp',
-                            delay: tIndex * 30,
-                        }"
-                        :xs="24"
-                        :sm="12"
-                        :md="6"
-                        :lg="4"
-                        :xl="4"
-                    >
-                        <div v-if="tem" class="shadow-xl card card-compact bg-base-100 glass">
-                            <figure>
-                                <nuxt-img
-                                    class="image"
-                                    :src="
-                                        tem?.min_imgbb_url
-                                            ? tem?.min_imgbb_url
-                                            : tem?.minify_preview
-                                    "
-                                    loading="lazy"
-                                    :class="{
-                                        'high-image-blur': imageFlur === 'high',
-                                        'low-image-blur': imageFlur === 'low',
-                                    }"
-                                />
-                            </figure>
-                            <div class="card-body">
-                                <h2 class="card-title">
-                                    {{ tem?.name }}
-                                </h2>
-                                <p>{{ tem?.author }}</p>
-                                <div class="justify-end card-actions">
+            <el-row v-if="templatesList && templatesList.length" class="list-con" :gutter="20">
+                <el-col
+                    v-for="(tem, tIndex) in templatesList"
+                    :key="tIndex"
+                    v-animate-css="{
+                        direction: 'modifySlideInUp',
+                        delay: tIndex * 30,
+                    }"
+                    :xs="24"
+                    :sm="12"
+                    :md="6"
+                    :lg="4"
+                    :xl="4"
+                >
+                    <div v-if="tem" class="shadow-xl card card-compact bg-base-100 glass">
+                        <figure>
+                            <nuxt-img
+                                class="image"
+                                :src="tem?.min_imgbb_url ? tem?.min_imgbb_url : tem?.minify_preview"
+                                loading="lazy"
+                                :class="{
+                                    'high-image-blur': imageFlur === 'high',
+                                    'low-image-blur': imageFlur === 'low',
+                                }"
+                                :alt="`${tem?.name} - ${tem?.author}`"
+                            />
+                        </figure>
+                        <div class="card-body">
+                            <h2 class="card-title">
+                                {{ tem?.name }}
+                            </h2>
+                            <p>{{ tem?.author }}</p>
+                            <div class="justify-end card-actions">
+                                <ClientOnly>
                                     <button
                                         class="btn btn-secondary btn-sm"
                                         @click="likeTemplate(tem?.id)"
@@ -59,21 +54,21 @@
                                                 : '收藏'
                                         }}
                                     </button>
-                                    <button
-                                        class="btn btn-accent btn-sm"
-                                        @click="exportPromptToShop(tem)"
-                                    >
-                                        购物车
-                                    </button>
-                                    <button class="btn btn-primary btn-sm" @click="cardClick(tem)">
-                                        详情
-                                    </button>
-                                </div>
+                                </ClientOnly>
+                                <button
+                                    class="btn btn-accent btn-sm"
+                                    @click="exportPromptToShop(tem)"
+                                >
+                                    购物车
+                                </button>
+                                <button class="btn btn-primary btn-sm" @click="cardClick(tem)">
+                                    详情
+                                </button>
                             </div>
                         </div>
-                    </el-col>
-                </el-row>
-            </ClientOnly>
+                    </div>
+                </el-col>
+            </el-row>
             <div class="demo-pagination-block">
                 <div v-if="totalPage && totalPage > 0" class="btn-group">
                     <button class="btn btn-outline" @click="firstPage">首页</button>
@@ -144,9 +139,19 @@ const currentTemplate: Ref<any | null> = ref(null);
 const imageFlur = ref('high');
 const searchText = ref('');
 
+const { data } = await useAsyncData('templatesList', () =>
+    TemplateApi.getTemplates({
+        pageIndex: pageIndex.value,
+        pageSize: pageSize.value,
+        searchTag: searchText.value,
+    }),
+);
+templatesList.value = data.value?.templates;
+total.value = data.value?.total;
+totalPage.value = Math.ceil(total.value / pageSize.value);
+
 onMounted(() => {
     indexStore = useIndexStore();
-    loadData();
 });
 
 const currentList = computed(() => {

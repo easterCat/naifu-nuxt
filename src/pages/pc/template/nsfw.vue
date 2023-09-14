@@ -1,9 +1,7 @@
 <template>
     <div class="nsfw-page page">
-        <ClientOnly>
-            <PcAppShadow />
-            <PcAppHeader />
-        </ClientOnly>
+        <PcAppShadow />
+        <PcAppHeader />
         <div class="content">
             <div class="banner-con">
                 <PcAppBanner
@@ -24,62 +22,61 @@
                 </template>
             </PcImageFlur>
             <el-row v-if="!loading" class="list-con" :gutter="20">
-                <ClientOnly>
-                    <el-col
-                        v-for="(tem, tIndex) in templatesList"
-                        :key="tIndex"
-                        v-animate-css="{
-                            direction: 'modifySlideInUp',
-                            delay: tIndex * 30,
-                        }"
-                        :xs="24"
-                        :sm="12"
-                        :md="6"
-                        :lg="4"
-                        :xl="4"
-                    >
-                        <div v-if="tem" class="shadow-xl card card-compact bg-base-100 glass">
-                            <figure>
-                                <nuxt-img
-                                    class="image"
-                                    :src="tem?.minify_preview"
-                                    loading="lazy"
-                                    :class="{
-                                        'high-image-blur': imageFlur === 'high',
-                                        'low-image-blur': imageFlur === 'low',
-                                    }"
-                                />
-                            </figure>
-                            <div class="card-body">
-                                <h2 class="card-title">
-                                    {{
-                                        tem?.name?.length > 20
-                                            ? tem?.name.slice(0, 20) + '...'
-                                            : tem?.name
-                                    }}
-                                </h2>
-                                <p>{{ tem?.author }}</p>
-                                <div class="justify-end card-actions">
-                                    <button class="btn btn-neutral btn-sm" @click="copyTem(tem)">
-                                        复制
-                                    </button>
-                                    <button class="btn btn-secondary btn-sm" @click="generate(tem)">
-                                        生成
-                                    </button>
-                                    <button class="btn btn-accent btn-sm" @click="cardClick(tem)">
-                                        详情
-                                    </button>
-                                    <button
-                                        class="btn btn-primary btn-sm"
-                                        @click="exportPromptToShop(tem)"
-                                    >
-                                        购物车
-                                    </button>
-                                </div>
+                <el-col
+                    v-for="(tem, tIndex) in templatesList"
+                    :key="tIndex"
+                    v-animate-css="{
+                        direction: 'modifySlideInUp',
+                        delay: tIndex * 30,
+                    }"
+                    :xs="24"
+                    :sm="12"
+                    :md="6"
+                    :lg="4"
+                    :xl="4"
+                >
+                    <div v-if="tem" class="shadow-xl card card-compact bg-base-100 glass">
+                        <figure>
+                            <nuxt-img
+                                class="image"
+                                :src="tem?.minify_preview"
+                                loading="lazy"
+                                :class="{
+                                    'high-image-blur': imageFlur === 'high',
+                                    'low-image-blur': imageFlur === 'low',
+                                }"
+                                :alt="tem?.name"
+                            />
+                        </figure>
+                        <div class="card-body">
+                            <h2 class="card-title">
+                                {{
+                                    tem?.name?.length > 20
+                                        ? tem?.name.slice(0, 20) + '...'
+                                        : tem?.name
+                                }}
+                            </h2>
+                            <p>{{ tem?.author }}</p>
+                            <div class="justify-end card-actions">
+                                <button class="btn btn-neutral btn-sm" @click="copyTem(tem)">
+                                    复制
+                                </button>
+                                <button class="btn btn-secondary btn-sm" @click="generate(tem)">
+                                    生成
+                                </button>
+                                <button class="btn btn-accent btn-sm" @click="cardClick(tem)">
+                                    详情
+                                </button>
+                                <button
+                                    class="btn btn-primary btn-sm"
+                                    @click="exportPromptToShop(tem)"
+                                >
+                                    购物车
+                                </button>
                             </div>
                         </div>
-                    </el-col>
-                </ClientOnly>
+                    </div>
+                </el-col>
             </el-row>
             <div v-if="loading" class="spinner">
                 <div class="dot1"></div>
@@ -147,6 +144,7 @@ nuxtApp.vueApp.provide(ID_INJECTION_KEY, {
 const { setShop } = useShop();
 const { copy } = useCopy();
 const { fps } = useFPS();
+const { TemplateApi, DanbooruApi } = useApi();
 
 const loading = ref(false);
 const pageIndex = ref(1);
@@ -161,8 +159,18 @@ const curDataFrom = ref('Gelbooru');
 const searchText = ref('');
 const imageFlur = ref('high');
 
+const { data } = await useAsyncData('templatesList', () =>
+    DanbooruApi.searchBooruList({
+        pageIndex: pageIndex.value,
+        pageSize: pageSize.value,
+        searchText: searchText.value,
+    }),
+);
+templatesList.value = data.value?.templates;
+total.value = data.value?.total;
+totalPage.value = Math.ceil(total.value / pageSize.value);
+
 onMounted(() => {
-    loadData();
     fps();
 });
 
@@ -173,7 +181,6 @@ const currentList = computed(() => {
             pageIndex.value > 3 ? pageIndex.value - 3 : pageIndex.value,
             pageIndex.value + 3,
         );
-        console.log('arr :>> ', arr);
     } else {
         arr = Array.from({ length: totalPage.value }, (element, index) => index).map((i) => i + 1);
     }
@@ -233,7 +240,7 @@ const loadData = async () => {
     try {
         templatesList.value = [];
         loading.value = true;
-        const { TemplateApi, DanbooruApi } = useApi();
+
         let result: any = null;
         if (curDataFrom.value === 'Noval') {
             result = await TemplateApi.getTemplatesNoval({
